@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<portfolio_entries>
+  <entry>
+    <type>article</type>
+    <title>Claude Code Plugins &amp; Marketplaces</title>
+    <summary>Explains Claude Code plugin architecture: commands, skills, and agents packaged into plugins and marketplaces. Covers component discovery, manifest structure, installation workflows, and marketplace distribution. Demonstrates developer experience considerations for reusable AI tooling.</summary>
+    <website_writeup>portfolio/website/claude-code-plugins-marketplaces.md</website_writeup>
+    <website_url>https://ailearnlog.com/claude-code-plugins-marketplaces/</website_url>
+    <repo_writeup>NONE</repo_writeup>
+    <repo_url>https://github.com/michellepace/my-claude-marketplace</repo_url>
+    <published>2025-12-08</published>
+  </entry>
+  <entry>
+    <type>project</type>
+    <title>There's an agent in my errors</title>
+    <summary>Demonstrates agentic behaviour within programmatic workflows using Claude Code slash commands and FireCrawl. Shows input validation, structured output design for agent interpretation, self-healing patterns, guardrailing agent suggestions, and documentation curation automation.</summary>
+    <website_writeup>portfolio/website/theres-an-agent-in-my-errors.md</website_writeup>
+    <website_url>https://ailearnlog.com/theres-an-agent-in-my-errors/</website_url>
+    <repo_writeup>NONE</repo_writeup>
+    <repo_url>https://github.com/michellepace/docs-for-ai</repo_url>
+    <published>2025-11-03</published>
+  </entry>
+  <entry>
+    <type>project</type>
+    <title>Claude Code in Data Analysis Action</title>
+    <summary>Visual walkthrough of using Claude Code for data analysis and debugging. Demonstrates agentic investigation through hypothesis formation, self-directed code analysis, root cause identification, and iterative problem-solving leading to automated fix implementation in a Python data visualisation project.</summary>
+    <website_writeup>portfolio/website/claude-code-data-analysis-action.md</website_writeup>
+    <website_url>https://ailearnlog.com/claude-code-data-analysis-action/</website_url>
+    <repo_writeup>NONE</repo_writeup>
+    <repo_url>https://github.com/michellepace/plot-py-repo</repo_url>
+    <published>2025-10-05</published>
+  </entry>
+  <entry>
+    <type>project</type>
+    <title>YouTube Transcript to XML &#x2022; Step 1 of 3</title>
+    <summary>Python CLI tool converting YouTube transcripts to structured XML with automatic chapter detection. Built entirely with Claude Code using test-driven development (60% test coverage), deliberate XML schema design, and clean architecture for future API integration. Uses yt-dlp for transcript extraction.</summary>
+    <website_writeup>portfolio/website/youtube-transcript-to-xml.md</website_writeup>
+    <website_url>https://ailearnlog.com/youtube-transcript-to-xml/</website_url>
+    <repo_writeup>NONE</repo_writeup>
+    <repo_url>https://github.com/michellepace/youtube-to-xml</repo_url>
+    <published>2025-09-30</published>
+  </entry>
+  <entry>
+    <type>article</type>
+    <title>Personal Tutor Follow Along: Claude Code and Python</title>
+    <summary>Beginner tutorial demonstrating interactive learning with AI: using claude.ai as personal coach to set up VSCode, Git, UV, and Claude Code on Mac. Six replicable conversations covering Python project setup, Jupyter notebooks, pre-commit hooks, and Git workflows.</summary>
+    <website_writeup>portfolio/website/claude-code-python-ai-tutor.md</website_writeup>
+    <website_url>https://ailearnlog.com/claude-code-python-ai-tutor/</website_url>
+    <repo_writeup>NONE</repo_writeup>
+    <repo_url>https://github.com/michellepace/text-analyser</repo_url>
+    <published>2025-05-27</published>
+  </entry>
+  <entry>
+    <type>article</type>
+    <title>Into Claude Code from Replit and Loveable</title>
+    <summary>Beginner guide for v0 and Replit users transitioning to Claude Code. Covers IDE setup, CLAUDE.md configuration and iteration, plan mode workflows, PRD documentation practices, GitHub CLI integration, and MCP introduction.</summary>
+    <website_writeup>portfolio/website/into-claude-code-from-replit.md</website_writeup>
+    <website_url>https://ailearnlog.com/into-claude-code-from-replit/</website_url>
+    <repo_writeup>NONE</repo_writeup>
+    <repo_url>NONE</repo_url>
+    <published>2025-02-09</published>
+  </entry>
+  <entry>
+    <type>project</type>
+    <title>Swim Club Website with AI Tools</title>
+    <summary>AI-assisted website design project demonstrating user research (stakeholder discovery in Miro), multi-tool AI workflows (Relume for sitemap/wireframes, Midjourney for custom hexagonal imagery, Claude for WordPress, ElevenLabs for dubbing), and change management (staff training and adoption). Shows prompt engineering for visual style consistency.</summary>
+    <website_writeup>portfolio/website/swim-club-website-ai-tools.md</website_writeup>
+    <website_url>https://ailearnlog.com/swim-club-website-ai-tools/</website_url>
+    <repo_writeup>NONE</repo_writeup>
+    <repo_url>NONE</repo_url>
+    <published>2024-10-01</published>
+  </entry>
+  <entry>
+    <type>article</type>
+    <title>Put Aside the Bench for the Mark: Choosing an LLM</title>
+    <summary>Python notebook comparing five Anthropic models on speed, capability, and cost. Demonstrates use-case-specific LLM evaluation methodology, speed-capability-cost tradeoff analysis, statistical analysis of API responses, cost optimisation considerations, and future-proofing strategies for model selection.</summary>
+    <website_writeup>portfolio/website/put-aside-the-bench-for-the-mark.md</website_writeup>
+    <website_url>https://ailearnlog.com/put-aside-the-bench-for-the-mark/</website_url>
+    <repo_writeup>NONE</repo_writeup>
+    <repo_url>https://github.com/michellepace/anthropic-model-compare</repo_url>
+    <published>2024-07-17</published>
+  </entry>
+  <entry>
+    <type>project</type>
+    <title>Correct Large Documents with Anthropic API</title>
+    <summary>Python notebook using Anthropic API to correct writing errors in large Word documents (100k+ words). Demonstrates chunking strategies for large document processing, automated prompt evaluation, LLM output validation through semantic similarity testing, and multi-language support (English, German, Italian).</summary>
+    <website_writeup>portfolio/website/correct-large-documents-anthropic-api.md</website_writeup>
+    <website_url>https://ailearnlog.com/correct-large-documents-anthropic-api/</website_url>
+    <repo_writeup>NONE</repo_writeup>
+    <repo_url>https://github.com/michellepace/word-document-corrector-claude</repo_url>
+    <published>2024-07-01</published>
+  </entry>
+  <entry>
+    <type>article</type>
+    <title>Lessons Learnt on AI Coding a Tiny Python Function</title>
+    <summary>Explores prompt engineering lessons from AI-assisted Python coding with Claude Sonnet. Demonstrates test-driven iteration, prompt refinement through feedback loops, and the critical insight of balancing constraints versus AI autonomy&#x2014;being too declarative reduces AI creativity and slows development.</summary>
+    <website_writeup>portfolio/website/lessons-learnt-on-ai-coding-a-tiny-python-function.md</website_writeup>
+    <website_url>https://ailearnlog.com/lessons-learnt-on-ai-coding-a-tiny-python-function/</website_url>
+    <repo_writeup>NONE</repo_writeup>
+    <repo_url>NONE</repo_url>
+    <published>2024-03-30</published>
+  </entry>
+  <entry>
+    <type>article</type>
+    <title>AI Bingo Words For the Silently Confused</title>
+    <summary>AI terminology hierarchy explained for non-technical readers: Data Science, ML, Deep Learning, Foundation Models, RAG, AI Agents. Demonstrates business value assessment by comparing ML vs Gen AI through real products built: industrial safety systems, computer vision, content recommendation (ML); document processing, LLM API integration (Gen AI).</summary>
+    <website_writeup>portfolio/website/ai-bingo-words-for-the-silently-confused.md</website_writeup>
+    <website_url>https://ailearnlog.com/ai-bingo-words-for-the-silently-confused/</website_url>
+    <repo_writeup>NONE</repo_writeup>
+    <repo_url>NONE</repo_url>
+    <published>2024-01-01</published>
+  </entry>
+</portfolio_entries>
