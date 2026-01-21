@@ -1,5 +1,7 @@
 ---
 description: Sync committed files to craft-me-public repo
+allowed-tools: Bash(git:*), Bash(rm:*), Bash(tar:*), Bash(cd:*), Bash(echo:*)
+disable-model-invocation: true
 ---
 
 # Sync to Public Portfolio
@@ -11,6 +13,7 @@ Sync **git-committed versions** of selected files to `~/projects/craft-me-public
 - `.claude/` (recursive)
 - `portfolio/` (recursive)
 - `README.md`
+- `ailearnlog.jpg`
 
 ## Pre-flight Check
 
@@ -51,13 +54,13 @@ echo ""
 
 echo "[2/6] Cleaning target directories..."
 rm -rf "$TARGET/.claude" "$TARGET/portfolio"
-rm -f "$TARGET/README.md"
-echo "✅ Removed existing .claude/, portfolio/, README.md"
+rm -f "$TARGET/README.md" "$TARGET/ailearnlog.jpg"
+echo "✅ Target cleaned"
 echo ""
 
 echo "[3/6] Exporting committed files from HEAD..."
 cd "$SOURCE"
-git archive HEAD .claude/ portfolio/ README.md | tar -x -C "$TARGET"
+git archive HEAD .claude/ portfolio/ README.md ailearnlog.jpg | tar -x -C "$TARGET"
 echo "✅ Exported to $TARGET"
 echo ""
 
@@ -82,6 +85,6 @@ echo "================================"
 
 Show the user the git status output above.
 
-Be helpful and ask me if I want to run `/commit` in the target repo (`~/projects/craft-me-public`). Files are already staged.
+Be helpful and ask me if I want to run the target project slash command `/commit`. Files are already staged.
 
 Be happy too, because I like emojis 🙂

@@ -2,6 +2,10 @@
 
 Use AI to chat with my portfolio.
 
+<a href="https://ailearnlog.com/" target="_blank">
+  <img src="ailearnlog.jpg" alt="AI Learnlog" width="830">
+</a>
+
 Or read it on [ailearnlog.com](https://ailearnlog.com/).
 
 ## Use From Claude Code
@@ -17,9 +21,9 @@ Then try:
 /ask-portfolio "Does she think in systems?"
 /ask-portfolio "Is she creative"
 /ask-portfolio "Can she do data analysis?"
-
-"Launch parallel agents to deeply analyse this entire portfolio to extract insights about the author. What are her innate skills?" @portfolio/INDEX.xml
 ```
+
+Direct: *"Launch parallel agents to deeply analyse this entire portfolio to extract insights about the author. What are her innate skills? `@portfolio/INDEX.xml`"*
 
 ## Use From A Normal AI Chat
 
