@@ -1,3 +1,5 @@
+<!-- This README is for the public repo (craft-me-public). Synced via /sync-to-craft-me-public -->
+
 # Chat with My Portfolio
 
 Use AI to chat with my portfolio (a collection of articles and projects).
