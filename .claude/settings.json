@@ -1,23 +1,27 @@
 {
-    "permissions": {
-      "allow": [
-        "Bash(cat:*)",
-        "Bash(claude mcp get:*)",
-        "Bash(claude mcp list)",
-        "Bash(echo:*)",
-        "Bash(find:*)",
-        "Bash(gh run list:*)",
-        "Bash(gh run view:*)",
-        "Bash(git diff:*)",
-        "Bash(git log:*)",
-        "Bash(ls:*)",
-        "Bash(lsof:*)",
-        "Bash(tree:*)",
-        "Bash(npx markdownlint-cli2:*)",
-        "Bash(xmllint:*)",
-        "Bash(wc:*)",
-        "mcp__ide__getDiagnostics"
-      ]
-    }
+  "permissions": {
+    "allow": [
+      "Bash(cat:*)",
+      "Bash(claude mcp get:*)",
+      "Bash(claude mcp list)",
+      "Bash(echo:*)",
+      "Bash(fdfind:*)",
+      "Bash(find:*)",
+      "Bash(rg:*)",
+      "Bash(gh run list:*)",
+      "Bash(gh run view:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(ls:*)",
+      "Bash(lsof:*)",
+      "Bash(tree:*)",
+      "Bash(npx markdownlint-cli2:*)",
+      "Bash(xmllint:*)",
+      "Bash(wc:*)",
+      "mcp__ide__getDiagnostics"
+    ]
+  },
+  "enabledPlugins": {
+    "skill-creator@my-claude-marketplace": true
   }
-  
+}
