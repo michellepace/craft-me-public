@@ -2,23 +2,17 @@
 
 # Chat with My Portfolio
 
-Use AI to chat with my portfolio (a collection of articles and projects).
-
 <a href="https://ailearnlog.com/" target="_blank">
   <img src="ailearnlog.jpg" alt="AI Learnlog" width="830">
 </a>
 
-Or read it on [ailearnlog.com](https://ailearnlog.com/).
+Use AI to chat with my portfolio (a collection of articles and projects). Or read it on [ailearnlog.com](https://ailearnlog.com/).
 
 ## Use From Claude Code
 
-Step 1: Clone this repo:
+Copy [.claude/commands/ask-portfolio.md](.claude/commands/ask-portfolio.md) to the same path in your project — Claude Code loads commands from `.claude/commands/`.
 
-```bash
-git clone https://github.com/michellepace/craft-me-public.git michelles-articles-projects
-```
-
-Step 2: Ask Claude Code anything, for example:
+Then ask anything:
 
 ```bash
 /ask-portfolio "Provide a portfolio overview, I'm interested in ..."
@@ -31,9 +25,9 @@ Step 2: Ask Claude Code anything, for example:
 /ask-portfolio "Launch 6 parallel agents to deeply analyse this entire portfolio to extract insights about Michelle. What are her innate skills? Format: Well-structured, emojis, narrow tables."
 ```
 
-*🤔 **Prefer not to clone?** Copy the [.claude/commands/ask-portfolio.md](.claude/commands/ask-portfolio.md) command into any VSCode/Cursor project and run (uses webfetch).*
+*🤔 **Prefer to analyse faster?** `git clone https://github.com/michellepace/craft-me-public.git`*
 
-## Use From A "Normal AI Chat"
+## Use From Any "Normal AI Chat"
 
 Copy and paste into claude.ai, grok.com, etc.:
 
