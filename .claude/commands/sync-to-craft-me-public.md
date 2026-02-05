@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Sync to Public Portfolio
 
-Sync **git-committed versions** of selected files to `~/projects/craft-me-public`.
+Sync **git-committed versions** of selected files to `~/projects/markdown/craft-me-public`.
 
 ## What Gets Synced
 
@@ -31,8 +31,8 @@ If the check fails, **stop and notify the user** — do not proceed with the syn
 #!/bin/bash
 set -e
 
-SOURCE="/home/mp/projects/craft-me-private"
-TARGET="/home/mp/projects/craft-me-public"
+SOURCE="/home/mp/projects/markdown/craft-me-private"
+TARGET="/home/mp/projects/markdown/craft-me-public"
 
 echo "================================"
 echo "Sync: Private → Public Portfolio"
