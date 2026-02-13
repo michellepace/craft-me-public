@@ -1,0 +1,1851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>With My Data — AI Learn Log</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --ink: #1a1714;
+  --paper: #f5f0e8;
+  --cream: #ede7db;
+  --warm-gray: #a89f91;
+  --accent: #c4450a;
+  --accent-light: #e8673a;
+  --muted: #6b6359;
+  --rule: #d4cdc0;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans: 'Outfit', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --transition: 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html { font-size: 16px; scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Grain overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+/* ═══════════════ NAVIGATION ═══════════════ */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 1.25rem 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(245, 240, 232, 0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--rule);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+nav.scrolled {
+  box-shadow: 0 1px 20px rgba(26, 23, 20, 0.06);
+}
+
+.nav-brand {
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  cursor: pointer;
+  transition: color var(--transition);
+}
+
+.nav-brand:hover { color: var(--accent); }
+
+.nav-brand span {
+  font-weight: 400;
+  font-style: italic;
+  color: var(--accent);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.nav-links a {
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  cursor: pointer;
+  position: relative;
+  transition: color var(--transition);
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 1.5px;
+  background: var(--accent);
+  transition: width var(--transition);
+}
+
+.nav-links a:hover { color: var(--ink); }
+.nav-links a:hover::after { width: 100%; }
+.nav-links a.active { color: var(--ink); }
+.nav-links a.active::after { width: 100%; }
+
+/* ═══════════════ PAGES ═══════════════ */
+.page {
+  display: none;
+  min-height: 100vh;
+  padding-top: 5rem;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.page.active {
+  display: block;
+}
+
+.page.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ═══════════════ JOURNAL LAYOUT ═══════════════ */
+.journal-layout {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2.5rem;
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 3rem;
+  align-items: start;
+}
+
+.journal-main {
+  min-width: 0;
+}
+
+.journal-sidebar {
+  position: sticky;
+  top: 6rem;
+  max-height: calc(100vh - 7rem);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ═══════════════ ARCHIVE STYLES ═══════════════ */
+.archive-header {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 3rem 2.5rem 2rem;
+}
+
+.archive-header h1 {
+  font-family: var(--serif);
+  font-size: 2.8rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+
+.archive-header p {
+  font-size: 1rem;
+  color: var(--muted);
+}
+
+.archive-filters {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.filter-btn {
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.5rem 1.2rem;
+  border: 1px solid var(--rule);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.filter-btn:hover { border-color: var(--ink); color: var(--ink); }
+.filter-btn.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+.archive-list {
+  padding-bottom: 4rem;
+}
+
+.archive-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 2rem;
+  align-items: baseline;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--rule);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.archive-item:first-child { border-top: 2px solid var(--ink); }
+
+.archive-item:hover { padding-left: 1rem; }
+
+.archive-item .date {
+  font-size: 0.78rem;
+  font-family: var(--mono);
+  color: var(--warm-gray);
+  min-width: 100px;
+}
+
+.archive-item h3 {
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  font-weight: 600;
+  transition: color var(--transition);
+}
+
+.archive-item:hover h3 { color: var(--accent); }
+
+.archive-item .category-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* ═══════════════ AI BUILT PAGE ═══════════════ */
+.aibuilt-header {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 3rem 2.5rem 2rem;
+}
+
+.aibuilt-header h1 {
+  font-family: var(--serif);
+  font-size: 2.8rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+
+.aibuilt-header p {
+  font-size: 1rem;
+  color: var(--muted);
+  max-width: 600px;
+}
+
+.aibuilt-grid {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2.5rem 4rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+.aibuilt-card {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  transition: all var(--transition);
+  overflow: hidden;
+}
+
+.aibuilt-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(26, 23, 20, 0.1);
+}
+
+.aibuilt-card-visual {
+  width: 100%;
+  aspect-ratio: 16/9;
+  position: relative;
+  overflow: hidden;
+}
+
+.aibuilt-card-visual .gradient {
+  position: absolute;
+  inset: 0;
+}
+
+.aibuilt-card-visual .card-label {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.9);
+  background: rgba(26, 23, 20, 0.5);
+  padding: 0.3rem 0.7rem;
+  backdrop-filter: blur(4px);
+}
+
+.aibuilt-card-body {
+  padding: 1.5rem;
+}
+
+.aibuilt-card-body h3 {
+  font-family: var(--serif);
+  font-size: 1.4rem;
+  font-weight: 600;
+  line-height: 1.25;
+  margin-bottom: 0.75rem;
+  transition: color var(--transition);
+}
+
+.aibuilt-card:hover .aibuilt-card-body h3 { color: var(--accent); }
+
+.aibuilt-card-body .card-desc {
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.aibuilt-card-tech {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.tech-pill {
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--rule);
+  color: var(--muted);
+  border-radius: 100px;
+}
+
+.aibuilt-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem 1.25rem;
+}
+
+.aibuilt-card-footer .read-link {
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  cursor: pointer;
+  text-decoration: none;
+  transition: color var(--transition);
+}
+
+.aibuilt-card-footer .read-link:hover { color: var(--accent-light); }
+
+.aibuilt-card-footer .repo-link {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+
+.aibuilt-card-footer .repo-link:hover { color: var(--ink); }
+
+.aibuilt-card-footer .repo-link svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+/* ═══════════════ POST LAYOUT ═══════════════ */
+.post-layout {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2.5rem;
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 3rem;
+  align-items: start;
+}
+
+.post-main {
+  min-width: 0;
+}
+
+.post-sidebar {
+  position: sticky;
+  top: 6rem;
+  max-height: calc(100vh - 7rem);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ═══════════════ ARTICLE STYLES ═══════════════ */
+.article-page {
+  padding-top: 1rem;
+}
+
+.article-header {
+  max-width: 780px;
+  padding: 0 0 2.5rem;
+}
+
+.article-header .back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+  margin-bottom: 2.5rem;
+  transition: color var(--transition);
+}
+
+.article-header .back-link:hover { color: var(--accent); }
+
+.article-header .category-tag {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+
+.article-header h1 {
+  font-family: var(--serif);
+  font-size: 2.8rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  margin-bottom: 1.25rem;
+}
+
+.article-header .subtitle {
+  font-size: 1.1rem;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  max-width: 600px;
+}
+
+.article-author-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.author-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--paper);
+}
+
+.article-author-info {
+  text-align: left;
+}
+
+.article-author-info .name {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.article-author-info .date {
+  font-size: 0.78rem;
+  color: var(--warm-gray);
+}
+
+.article-body {
+  max-width: 680px;
+  padding: 0 0 4rem;
+}
+
+.article-body p {
+  font-family: var(--serif);
+  font-size: 1.2rem;
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+  color: #2a2520;
+}
+
+.article-body h2 {
+  font-family: var(--serif);
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  letter-spacing: -0.01em;
+}
+
+.article-body blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 0.5rem 0 0.5rem 1.5rem;
+  margin: 2rem 0;
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  font-style: italic;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.article-body .pullquote {
+  font-family: var(--serif);
+  font-size: 1.8rem;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: center;
+  color: var(--accent);
+  padding: 2.5rem 1rem;
+  margin: 2.5rem 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+.article-body code {
+  font-family: var(--mono);
+  font-size: 0.88em;
+  background: var(--cream);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+}
+
+.article-body ul, .article-body ol {
+  font-family: var(--serif);
+  font-size: 1.2rem;
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+  padding-left: 1.5rem;
+  color: #2a2520;
+}
+
+.article-body li {
+  margin-bottom: 0.5rem;
+}
+
+.article-tags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--rule);
+}
+
+.article-tags span {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--rule);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.article-tags span:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ═══════════════ CHAT PANEL ═══════════════ */
+.chat-panel {
+  background: var(--cream);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: calc(100vh - 7rem);
+}
+
+.chat-header {
+  padding: 1.25rem 1.25rem 1rem;
+  border-bottom: 1px solid var(--rule);
+  flex-shrink: 0;
+}
+
+.chat-header h3 {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.chat-header p {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.chat-messages::-webkit-scrollbar { width: 4px; }
+.chat-messages::-webkit-scrollbar-track { background: transparent; }
+.chat-messages::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 2px; }
+
+.chat-welcome {
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.6;
+  padding: 0.5rem 0;
+}
+
+.chat-message {
+  max-width: 88%;
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  border-radius: 12px;
+  animation: fadeUp 0.3s ease forwards;
+}
+
+.chat-message.user {
+  align-self: flex-end;
+  background: var(--ink);
+  color: var(--paper);
+  border-bottom-right-radius: 4px;
+}
+
+.chat-message.ai {
+  align-self: flex-start;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  color: var(--ink);
+  border-bottom-left-radius: 4px;
+  position: relative;
+  padding-left: 2.8rem;
+}
+
+.chat-message.ai::before {
+  content: 'M.';
+  position: absolute;
+  left: 0.65rem;
+  top: 0.65rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--paper);
+  font-family: var(--serif);
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.typing-indicator {
+  align-self: flex-start;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  border-bottom-left-radius: 4px;
+  padding: 0.85rem 1.2rem 0.85rem 2.8rem;
+  display: flex;
+  gap: 0.3rem;
+  position: relative;
+}
+
+.typing-indicator::before {
+  content: 'M.';
+  position: absolute;
+  left: 0.65rem;
+  top: 0.55rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--paper);
+  font-family: var(--serif);
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.typing-indicator .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: bounce 1.4s ease-in-out infinite;
+}
+
+.typing-indicator .dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-indicator .dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-6px); }
+}
+
+.chat-prompts {
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  border-top: 1px solid var(--rule);
+  flex-shrink: 0;
+}
+
+.prompt-pill {
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.prompt-pill:hover {
+  background: var(--accent);
+  color: var(--paper);
+}
+
+.chat-input-row {
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  gap: 0.5rem;
+  border-top: 1px solid var(--rule);
+  flex-shrink: 0;
+}
+
+.chat-input-row input {
+  flex: 1;
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--rule);
+  border-radius: 100px;
+  background: var(--paper);
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+.chat-input-row input:focus {
+  border-color: var(--accent);
+}
+
+.chat-input-row input::placeholder {
+  color: var(--warm-gray);
+}
+
+.chat-send-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: var(--ink);
+  color: var(--paper);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition);
+  flex-shrink: 0;
+}
+
+.chat-send-btn:hover { background: var(--accent); }
+
+.chat-send-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+/* ═══════════════ CHAT FAB (mobile) ═══════════════ */
+.chat-fab {
+  display: none;
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--paper);
+  border: none;
+  cursor: pointer;
+  z-index: 90;
+  box-shadow: 0 4px 20px rgba(196, 69, 10, 0.3);
+  font-family: var(--serif);
+  font-size: 1.2rem;
+  font-weight: 700;
+  transition: all var(--transition);
+}
+
+.chat-fab:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 28px rgba(196, 69, 10, 0.4);
+}
+
+/* ═══════════════ CHAT SLIDE PANEL (mobile) ═══════════════ */
+.chat-slide-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 23, 20, 0.4);
+  z-index: 150;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.chat-slide-overlay.active {
+  display: block;
+}
+
+.chat-slide-overlay.visible {
+  opacity: 1;
+}
+
+.chat-slide-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(400px, 90vw);
+  background: var(--cream);
+  z-index: 151;
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-slide-panel.open {
+  transform: translateX(0);
+}
+
+.chat-slide-panel .slide-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  color: var(--muted);
+  z-index: 5;
+  transition: color var(--transition);
+}
+
+.chat-slide-panel .slide-close:hover { color: var(--ink); }
+
+.chat-slide-panel .chat-header { padding-top: 1.5rem; }
+
+.chat-slide-panel .chat-messages {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* ═══════════════ FOOTER ═══════════════ */
+footer {
+  background: var(--ink);
+  color: var(--warm-gray);
+  padding: 1.75rem 2.5rem;
+}
+
+.footer-row {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+}
+
+/* ═══════════════ ANIMATIONS ═══════════════ */
+.stagger { opacity: 0; transform: translateY(16px); animation: fadeUp 0.6s ease forwards; }
+.stagger:nth-child(1) { animation-delay: 0.05s; }
+.stagger:nth-child(2) { animation-delay: 0.12s; }
+.stagger:nth-child(3) { animation-delay: 0.19s; }
+.stagger:nth-child(4) { animation-delay: 0.26s; }
+.stagger:nth-child(5) { animation-delay: 0.33s; }
+.stagger:nth-child(6) { animation-delay: 0.40s; }
+.stagger:nth-child(7) { animation-delay: 0.47s; }
+.stagger:nth-child(8) { animation-delay: 0.54s; }
+
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══════════════ SCROLLBAR ═══════════════ */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--cream); }
+::-webkit-scrollbar-thumb { background: var(--warm-gray); }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+/* ═══════════════ RESPONSIVE ═══════════════ */
+@media (max-width: 1024px) {
+  .journal-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .journal-sidebar {
+    display: none;
+  }
+
+  .post-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .post-sidebar {
+    display: none;
+  }
+
+  .chat-fab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .aibuilt-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  nav { padding: 1rem 1.25rem; }
+  .nav-links { gap: 1rem; }
+
+  .archive-header {
+    padding: 2rem 1.25rem 1rem;
+  }
+
+  .archive-header h1 { font-size: 2rem; }
+
+  .aibuilt-header {
+    padding: 2rem 1.25rem 1rem;
+  }
+
+  .aibuilt-header h1 { font-size: 2rem; }
+
+  .aibuilt-grid {
+    padding: 0 1.25rem 3rem;
+  }
+
+  .journal-layout {
+    padding: 0 1.25rem;
+  }
+
+  .post-layout {
+    padding: 0 1.25rem;
+  }
+
+  .archive-item { grid-template-columns: 1fr; gap: 0.25rem; }
+  .archive-item .category-label { display: none; }
+
+  .article-header h1 { font-size: 2rem; }
+
+  footer { padding: 1.5rem 1.25rem; }
+  .footer-row { flex-direction: column; gap: 0.5rem; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ NAVIGATION ═══════════════ -->
+<nav id="navbar">
+  <div class="nav-brand" onclick="navigate('journal')">🟣 With My Data<span>.</span></div>
+  <div class="nav-links">
+    <a onclick="navigate('journal')" class="active" data-page="journal">Journal</a>
+    <a onclick="navigate('aibuilt')" data-page="aibuilt">AI Built</a>
+  </div>
+</nav>
+
+<!-- ═══════════════ JOURNAL PAGE ═══════════════ -->
+<div class="page active" id="page-journal">
+  <div class="archive-header">
+    <h1>Journal</h1>
+    <p>Michelle's AI learning log — product management meets engineering.</p>
+  </div>
+
+  <div class="journal-layout">
+    <div class="journal-main">
+      <div class="archive-filters" id="journal-filters"></div>
+      <div class="archive-list" id="journal-list"></div>
+    </div>
+    <div class="journal-sidebar">
+      <div class="chat-panel" id="journal-chat">
+        <div class="chat-header">
+          <h3>Ask about Michelle's work</h3>
+          <p>AI-powered portfolio assistant</p>
+        </div>
+        <div class="chat-messages" id="journal-chat-messages">
+          <div class="chat-welcome">Hi! I know all about Michelle's AI portfolio. Ask me anything, or try one of the prompts below.</div>
+        </div>
+        <div class="chat-prompts" id="journal-chat-prompts">
+          <button class="prompt-pill" onclick="sendChat('journal', 'What are Michelle\'s key skills?')">Key skills?</button>
+          <button class="prompt-pill" onclick="sendChat('journal', 'Summarise her latest project')">Latest project?</button>
+          <button class="prompt-pill" onclick="sendChat('journal', 'What\'s her learning journey?')">Learning journey?</button>
+        </div>
+        <div class="chat-input-row">
+          <input type="text" id="journal-chat-input" placeholder="Ask about Michelle's work..." onkeydown="if(event.key==='Enter')sendChat('journal')">
+          <button class="chat-send-btn" onclick="sendChat('journal')">
+            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ AI BUILT PAGE ═══════════════ -->
+<div class="page" id="page-aibuilt">
+  <div class="aibuilt-header">
+    <h1>AI Built</h1>
+    <p>Projects Michelle built with AI tools — from Python CLIs to plugin architectures. Each card shows what was built, how, and why.</p>
+  </div>
+  <div class="aibuilt-grid" id="aibuilt-grid"></div>
+</div>
+
+<!-- ═══════════════ POST PAGE ═══════════════ -->
+<div class="page" id="page-post">
+  <div class="post-layout">
+    <div class="post-main">
+      <div class="article-page">
+        <div class="article-header">
+          <div class="back-link" id="post-back-link" onclick="navigateBack()">&larr; Back to Journal</div>
+          <div class="category-tag" id="post-category"></div>
+          <h1 id="post-title"></h1>
+          <p class="subtitle" id="post-subtitle"></p>
+          <div class="article-author-row">
+            <div class="author-avatar">MP</div>
+            <div class="article-author-info">
+              <div class="name">Michelle Pace</div>
+              <div class="date" id="post-date"></div>
+            </div>
+          </div>
+        </div>
+        <div class="article-body" id="post-body"></div>
+      </div>
+    </div>
+    <div class="post-sidebar">
+      <div class="chat-panel" id="post-chat">
+        <div class="chat-header">
+          <h3>Ask about this post</h3>
+          <p id="post-chat-context">AI-powered post assistant</p>
+        </div>
+        <div class="chat-messages" id="post-chat-messages">
+          <div class="chat-welcome">I've read this post. Ask me anything about it!</div>
+        </div>
+        <div class="chat-prompts" id="post-chat-prompts">
+          <button class="prompt-pill" onclick="sendChat('post', 'Summarise this in 3 sentences')">Summarise</button>
+          <button class="prompt-pill" onclick="sendChat('post', 'What skills does this demonstrate?')">Skills shown?</button>
+          <button class="prompt-pill" onclick="sendChat('post', 'Explain the technical approach')">Technical approach?</button>
+        </div>
+        <div class="chat-input-row">
+          <input type="text" id="post-chat-input" placeholder="Ask about this post..." onkeydown="if(event.key==='Enter')sendChat('post')">
+          <button class="chat-send-btn" onclick="sendChat('post')">
+            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer>
+  <div class="footer-row">
+    <span>&copy; 2026 AI Learn Log</span>
+    <span>Set in Cormorant Garamond &amp; Outfit</span>
+  </div>
+</footer>
+
+<!-- ═══════════════ CHAT FAB (tablet/mobile) ═══════════════ -->
+<button class="chat-fab" id="chat-fab" onclick="openSlideChat()">M.</button>
+
+<!-- ═══════════════ SLIDE-OUT CHAT (tablet/mobile) ═══════════════ -->
+<div class="chat-slide-overlay" id="chat-slide-overlay" onclick="closeSlideChat()"></div>
+<div class="chat-slide-panel" id="chat-slide-panel">
+  <button class="slide-close" onclick="closeSlideChat()">&times;</button>
+  <div class="chat-header">
+    <h3 id="slide-chat-title">Ask about Michelle's work</h3>
+    <p id="slide-chat-subtitle">AI-powered portfolio assistant</p>
+  </div>
+  <div class="chat-messages" id="slide-chat-messages">
+    <div class="chat-welcome">Hi! I know all about Michelle's AI portfolio. Ask me anything!</div>
+  </div>
+  <div class="chat-prompts" id="slide-chat-prompts"></div>
+  <div class="chat-input-row">
+    <input type="text" id="slide-chat-input" placeholder="Ask a question..." onkeydown="if(event.key==='Enter')sendSlideChat()">
+    <button class="chat-send-btn" onclick="sendSlideChat()">
+      <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+// ═══════════════ DATA ═══════════════
+const posts = [
+  {
+    id: 0,
+    title: "Claude Code Plugins & Marketplaces",
+    subtitle: "How Claude Code packages skills, agents, and commands into plugins and marketplaces — and what that means for reusable AI tooling.",
+    category: "AI Engineering",
+    date: "December 8, 2025",
+    isAIBuilt: true,
+    tech: ["Claude Code", "Plugins", "Marketplace Architecture"],
+    repo: "https://github.com/michellepace/my-claude-marketplace",
+    gradient: "linear-gradient(135deg, #2c1810 0%, #8b3a1a 40%, #c4450a 70%, #e8673a 100%)",
+    body: `
+      <p>This is a layman's write-up of how Claude Code packages skills, agents, and commands into plugins and distributes them through marketplaces. It's the architecture that makes AI tooling reusable and shareable.</p>
+
+      <h2>Recap: Commands, Agent Skills, and Agents</h2>
+
+      <p>Claude Code has three types of reusable components. <strong>Commands</strong> are explicit — you invoke them with a slash. <strong>Agent skills</strong> are automatic — Claude discovers and uses them when relevant. <strong>Agents</strong> run in a separate context with their own tools and permissions.</p>
+
+      <blockquote>The naming matters: commands are things you ask for, skills are things Claude notices it can do, and agents are things that go off and work independently.</blockquote>
+
+      <h2>A Plugin is a Folder</h2>
+
+      <p>A plugin is simply a folder containing a manifest file (<code>manifest.json</code>) plus any combination of commands, agents, skills, hooks, and scripts. The manifest declares what the plugin provides, its version, and any dependencies.</p>
+
+      <p>Claude discovers components through a well-defined search path: project scope first, then user scope, then system scope. This means project-specific plugins override user-wide ones, which override system-wide ones.</p>
+
+      <div class="pullquote">A marketplace is a collection of plugins — a curated registry that makes discovery, installation, and updates trivial.</div>
+
+      <h2>A Marketplace is a Collection of Plugins</h2>
+
+      <p>The marketplace concept solves distribution. Instead of manually copying plugin folders, you point Claude Code at a marketplace URL or local path. It handles discovery, installation, version management, and updates. Think of it as npm for Claude Code capabilities.</p>
+
+      <p>This architecture matters because it transforms Claude Code from a single-user tool into a platform. Teams can share specialised capabilities. Communities can build and distribute domain-specific tooling. The plugin boundary enforces clean interfaces between components.</p>
+    `,
+    tags: ["Claude Code", "Plugins", "Architecture", "Developer Experience"],
+    summary: "This post explains how Claude Code packages reusable AI capabilities into plugins with manifests, commands, skills, and agents — and distributes them through marketplace registries. It demonstrates Michelle's understanding of platform architecture and developer experience design.",
+    skills: "Plugin architecture design, manifest schema design, developer experience (DX) thinking, platform strategy, technical writing for non-technical audiences.",
+    technical: "The plugin system uses a folder-based architecture with manifest.json declarations. Component discovery follows a scope hierarchy (project → user → system). Marketplaces provide distribution through URL-based registries with version management. The design borrows from npm/pip patterns adapted for AI tooling."
+  },
+  {
+    id: 1,
+    title: "There's an Agent in My Errors",
+    subtitle: "Demonstrating agentic behaviour within programmatic workflows — validation, error interpretation, and self-healing patterns.",
+    category: "Agentic Patterns",
+    date: "November 3, 2025",
+    isAIBuilt: true,
+    tech: ["Python", "Claude Code", "FireCrawl", "Agentic Patterns"],
+    repo: "https://github.com/michellepace/docs-for-ai",
+    gradient: "linear-gradient(135deg, #1a1a2e 0%, #16213e 30%, #0f3460 60%, #e94560 100%)",
+    body: `
+      <p>This project automates documentation curation for AI context, demonstrating genuine agentic behaviour: the system validates inputs, interprets errors, and recovers — all within a simple <code>/curate-doc [collection] [URL]</code> slash command.</p>
+
+      <h2>What Is Going On With Agents</h2>
+
+      <p>The word "agent" gets thrown around loosely. In this project, agentic behaviour means something specific: the system makes decisions based on context, not just following a script. When FireCrawl returns an error, the slash command doesn't just fail — it interprets the error, suggests alternatives, and can retry with adjusted parameters.</p>
+
+      <blockquote>The real test of agentic behaviour isn't autonomy — it's the quality of recovery when things go wrong. Anyone can build a happy path. The agent shows up in the error handling.</blockquote>
+
+      <h2>Two-Level Validation</h2>
+
+      <p>The system uses two validation layers. Pre-script sensing checks the URL format, collection existence, and network accessibility before invoking the Python script. Script-level self-healing catches runtime errors (rate limits, parsing failures, content format mismatches) and either retries, adjusts parameters, or provides actionable error messages.</p>
+
+      <div class="pullquote">Guardrailing agent suggestions is as important as enabling them. The system constrains what the agent can change while giving it freedom in how it recovers.</div>
+
+      <h2>Lessons Learnt</h2>
+
+      <p>Building this taught three lessons. First, structured output design matters enormously — the format your scripts return determines how well the agent can interpret results. Second, self-healing patterns need boundaries — the agent should fix transient errors but escalate structural ones. Third, the best agentic workflows feel boring — they just work, and you only notice the intelligence when something unusual happens.</p>
+    `,
+    tags: ["Agents", "Python", "Error Handling", "Claude Code"],
+    summary: "This project builds a documentation curation tool that demonstrates real agentic behaviour: two-level validation (pre-script sensing and script self-healing), structured output design for agent interpretation, and guardrailed recovery patterns. It's a practical example of how agents work within programmatic workflows.",
+    skills: "Agentic architecture design, error handling patterns, input validation strategies, structured output design, Python scripting, Claude Code slash commands, FireCrawl integration.",
+    technical: "Uses a Claude Code slash command (/curate-doc) wrapping Python scripts with FireCrawl for web content extraction. Two-level validation: pre-script URL/collection checks and script-level error recovery. Structured JSON output enables the agent to interpret results and make recovery decisions. Guardrails constrain which parameters the agent can modify during self-healing."
+  },
+  {
+    id: 2,
+    title: "Claude Code in Data Analysis Action",
+    subtitle: "A visual walkthrough of using Claude Code's plan mode to investigate and fix unexpected data anomalies.",
+    category: "Data Analysis",
+    date: "October 5, 2025",
+    isAIBuilt: true,
+    tech: ["Python", "Claude Code", "Data Visualisation"],
+    repo: "https://github.com/michellepace/plot-py-repo",
+    gradient: "linear-gradient(135deg, #0d1b2a 0%, #1b2838 30%, #2d6a4f 60%, #52b788 100%)",
+    body: `
+      <p>This is the story of using Claude Code in planning mode to investigate suspicious data spikes. A chart showing repository growth had three 40,000+ line spikes in September that shouldn't have been there. All code was written by Claude Code — I directed the investigation.</p>
+
+      <h2>The Problem</h2>
+
+      <p>The plot-py-repo tool generates visualisations of Git repository activity over time. When I generated a chart for the youtube-to-xml repository, three massive spikes appeared in September. The repository didn't have any 40,000-line commits. Something was wrong with the data pipeline.</p>
+
+      <blockquote>The best debugging is investigative, not mechanical. Claude Code didn't just search for the bug — it formed hypotheses, tested them, and revised its approach when evidence contradicted expectations.</blockquote>
+
+      <h2>Claude Code Sherlock Holmes — Finding the Root Cause</h2>
+
+      <p>In plan mode, Claude Code approached the investigation like a detective. It started with the obvious hypothesis (bad data in the CSV), disproved it, moved to the chart generation code, found a date-parsing edge case where timezone offsets caused certain commits to be counted in adjacent days, and proposed a fix.</p>
+
+      <div class="pullquote">Agentic investigation means forming hypotheses, testing them, and revising. It's not just executing commands — it's reasoning about what the evidence means.</div>
+
+      <h2>Fixed</h2>
+
+      <p>The root cause was a timezone-aware datetime comparison interacting with a date-grouping function. Commits near midnight UTC were being double-counted when the local timezone offset pushed them across the date boundary. The fix was three lines of code — but finding those three lines required understanding the entire data pipeline.</p>
+    `,
+    tags: ["Data Analysis", "Debugging", "Python", "Claude Code"],
+    summary: "Michelle used Claude Code's plan mode to investigate three suspicious 40k+ line spikes in a repository growth chart. The agentic debugging process — hypothesis formation, evidence testing, revision — found a timezone date-parsing edge case causing double-counting. The fix was three lines, but finding them required understanding the full data pipeline.",
+    skills: "Agentic debugging, hypothesis-driven investigation, data pipeline analysis, Python data visualisation, Claude Code plan mode, root cause analysis.",
+    technical: "Claude Code investigated a plot-py-repo data visualisation showing false spikes. The investigation used plan mode for systematic hypothesis testing. Root cause: timezone-aware datetime comparisons in a date-grouping function double-counted commits near midnight UTC. Fix: normalising datetimes to UTC before date-bucketing."
+  },
+  {
+    id: 3,
+    title: "YouTube Transcript to XML",
+    subtitle: "A Python CLI tool converting YouTube transcripts to structured XML with automatic chapter detection — built with TDD.",
+    category: "AI Coding",
+    date: "September 30, 2025",
+    isAIBuilt: true,
+    tech: ["Python", "Claude Code", "TDD", "yt-dlp"],
+    repo: "https://github.com/michellepace/youtube-to-xml",
+    gradient: "linear-gradient(135deg, #1a1423 0%, #3d1f5c 30%, #6b2fa0 60%, #9b59b6 100%)",
+    body: `
+      <p>This command-line tool converts YouTube transcripts into structured XML with automatic chapter detection. It accepts YouTube URLs or text files, and solves the problem of managing 11-hour educational videos by converting transcripts into a machine-readable format designed to improve LLM comprehension.</p>
+
+      <h2>The Problem</h2>
+
+      <p>Educational YouTube content is increasingly long-form — 4, 8, even 11-hour courses. The transcripts are valuable but unstructured. Copying them into an LLM produces mediocre results because the model has no structural cues: no chapters, no topic boundaries, no hierarchy.</p>
+
+      <blockquote>Structure isn't just formatting — it's meaning. A flat transcript and a chapter-structured XML document contain the same words, but the XML carries semantic information that fundamentally changes how an LLM can reason about the content.</blockquote>
+
+      <h2>What This Tool Does</h2>
+
+      <p>The tool extracts transcripts using <code>yt-dlp</code>, detects chapter boundaries from YouTube metadata (or infers them from content patterns), and outputs structured XML with chapter elements, timestamps, and speaker attribution where available. The XML schema was deliberately designed for LLM consumption.</p>
+
+      <div class="pullquote">Built entirely with Claude Code using test-driven development — 60% test coverage, deliberate XML schema design, and clean architecture for future API integration.</div>
+
+      <h2>Architecting with Grok and Claude Code</h2>
+
+      <p>The architecture conversation started in Grok (for rapid ideation) and moved to Claude Code (for implementation). This two-tool approach — one for thinking, one for building — let me explore the design space without prematurely committing to code. TDD meant every feature started as a failing test.</p>
+    `,
+    tags: ["Python", "TDD", "XML", "YouTube", "Claude Code"],
+    summary: "A Python CLI tool that converts YouTube transcripts to structured XML with automatic chapter detection. Built with TDD (60% coverage) using Claude Code. The XML schema is deliberately designed for LLM consumption, adding semantic structure (chapters, timestamps) that improves how AI models reason about long-form educational content.",
+    skills: "Test-driven development, CLI tool design, XML schema design, Python architecture, Claude Code workflow, content structure design for AI consumption.",
+    technical: "Python CLI using yt-dlp for transcript extraction. Automatic chapter detection from YouTube metadata with fallback content-pattern inference. Deliberate XML schema design with chapter elements, timestamps, and speaker attribution. Built with TDD — tests written before implementation. Clean architecture separating extraction, parsing, and output formatting for future API integration."
+  },
+  {
+    id: 4,
+    title: "Personal Tutor: Claude Code and Python",
+    subtitle: "A step-by-step guide for non-technical people to set up a Python development environment using AI as a personal tutor.",
+    category: "Tutorial",
+    date: "May 27, 2025",
+    isAIBuilt: true,
+    tech: ["Python", "Claude Code", "Jupyter", "Git"],
+    repo: "https://github.com/michellepace/text-analyser",
+    gradient: "linear-gradient(135deg, #2d3436 0%, #636e72 30%, #00b894 60%, #55efc4 100%)",
+    body: `
+      <p>This is a step-by-step guide for non-technical people who want to experience what it's like to build with Claude Code and Python. It starts with installing VSCode and ends with a working text analysis tool, Git workflow, and Claude Code integration — six replicable conversations that anyone can follow.</p>
+
+      <h2>Create Your claude.ai Project</h2>
+
+      <p>The approach uses claude.ai as a personal tutor. You create a project with specific context about your skill level and goals, then have a series of conversations that incrementally build your environment and understanding. Each conversation has a clear objective and produces a concrete outcome.</p>
+
+      <blockquote>The best way to learn a development tool is to use it for something you actually care about. Abstract tutorials teach syntax. Project-based tutorials teach thinking.</blockquote>
+
+      <h2>Recreate Conversations Incrementally</h2>
+
+      <p>Six conversations cover: (1) VSCode installation and configuration, (2) Git and source control basics, (3) Python project setup with UV package manager, (4) Jupyter notebooks for interactive coding, (5) Code quality with pre-commit hooks, and (6) Claude Code integration for AI-assisted development.</p>
+
+      <div class="pullquote">Claude Code isn't just a code generator — it's a patient tutor that meets you where you are. The six conversations in this guide prove that non-technical people can build real tools with AI assistance.</div>
+
+      <h2>Where to Next?</h2>
+
+      <p>The guide deliberately stops at a working foundation rather than trying to be comprehensive. The text-analyser tool is simple enough to understand but complex enough to demonstrate real development patterns: project structure, testing, version control, and AI-assisted development.</p>
+    `,
+    tags: ["Tutorial", "Python", "Claude Code", "Beginners"],
+    summary: "A beginner-friendly guide using claude.ai as a personal tutor to set up a complete Python development environment. Six replicable conversations cover VSCode, Git, UV, Jupyter, pre-commit hooks, and Claude Code integration — proving non-technical people can build real tools with AI assistance.",
+    skills: "Technical writing for non-technical audiences, curriculum design, AI-as-tutor methodology, Python development workflow, Git fundamentals, tool chain setup.",
+    technical: "Six structured claude.ai conversations building incrementally: VSCode setup → Git/source control → Python/UV project creation → Jupyter notebooks → pre-commit hooks (ruff, black) → Claude Code integration. Each conversation produces a working artifact. The text-analyser repo demonstrates the complete workflow."
+  },
+  {
+    id: 5,
+    title: "Into Claude Code from Replit and Loveable",
+    subtitle: "A quick-start guide for people coming from Replit and v0 who want to try Claude Code — and why CLAUDE.md changes everything.",
+    category: "Tutorial",
+    date: "February 9, 2025",
+    isAIBuilt: false,
+    tech: [],
+    repo: null,
+    gradient: "linear-gradient(135deg, #0a1628 0%, #1e3a5f 40%, #4a8cca 100%)",
+    body: `
+      <p>If you've been using Replit or v0 or Loveable and want to try Claude Code, this guide is for you. The transition isn't just a tool swap — it's a shift from "slot-machine code generation" to deliberate, workflow-focused development. It requires patience, but the payoff is real understanding.</p>
+
+      <h2>If You Don't Understand Your Tech Stack</h2>
+
+      <p>The biggest difference between Replit/v0 and Claude Code is that Claude Code expects you to understand — or be willing to learn — your tech stack. It won't hide complexity from you. This sounds harder, but it means every project builds your genuine competence rather than your dependence on a tool.</p>
+
+      <blockquote>CLAUDE.md is your project's memory. It tells Claude Code what your project is, how it's structured, and what conventions to follow. Without it, every conversation starts from scratch. With it, Claude Code becomes a collaborator who knows your codebase.</blockquote>
+
+      <h2>Get Going: Claude Code QuickStart</h2>
+
+      <p>The guide covers the essential setup: IDE configuration, CLAUDE.md as your project's persistent memory, plan mode for thinking before coding, PRD documentation for communicating intent, and GitHub CLI integration for professional workflows.</p>
+
+      <div class="pullquote">The transition from Replit to Claude Code is a transition from consuming AI to collaborating with AI. CLAUDE.md is what makes the collaboration possible.</div>
+
+      <h2>What's Next — MCP</h2>
+
+      <p>Model Context Protocol (MCP) is introduced as the next frontier — extending Claude Code's capabilities by connecting it to external tools and data sources. The guide positions MCP as the bridge between Claude Code and the broader tool ecosystem.</p>
+    `,
+    tags: ["Tutorial", "Claude Code", "Replit", "Beginners"],
+    summary: "A transition guide for Replit/v0 users moving to Claude Code. Key insight: CLAUDE.md transforms Claude Code from a code generator into a project-aware collaborator. Covers IDE setup, plan mode, PRD documentation, and GitHub CLI — emphasising that understanding your tech stack builds genuine competence.",
+    skills: "Technical writing, developer onboarding, tool comparison and evaluation, workflow design, documentation-first development.",
+    technical: "Covers the Claude Code workflow: CLAUDE.md configuration for project memory, plan mode for deliberate development, PRD-driven feature development, GitHub CLI integration. Contrasts with Replit/v0's immediate-feedback loop to explain why upfront configuration investment pays off in code quality and developer understanding."
+  },
+  {
+    id: 6,
+    title: "Swim Club Website with AI Tools",
+    subtitle: "Building a real client website using Miro, Relume, Midjourney, Claude, WordPress, and ElevenLabs — from stakeholder research to multilingual launch.",
+    category: "AI Design",
+    date: "October 1, 2024",
+    isAIBuilt: true,
+    tech: ["Miro", "Relume", "Midjourney", "Claude", "WordPress", "ElevenLabs"],
+    repo: null,
+    gradient: "linear-gradient(135deg, #0077b6 0%, #00b4d8 30%, #90e0ef 60%, #caf0f8 100%)",
+    body: `
+      <p>This is the account of building a swim club website using multiple AI tools — from stakeholder discovery in Miro through to a multilingual WordPress launch. It demonstrates that non-designers can create professional websites by orchestrating the right AI tools with deliberate learning.</p>
+
+      <h2>Before &amp; After</h2>
+
+      <p>The swim club's previous website was a generic template with stock photos. The redesign transformed it into a community-focused site with custom hexagonal imagery (Midjourney), structured content (Claude), and German dubbing (ElevenLabs). The before/after comparison demonstrates the concrete impact of AI-assisted design.</p>
+
+      <blockquote>The real skill isn't using one AI tool well — it's knowing which tool to use for which part of the process. Miro for talking, Relume for structure, Midjourney for visuals, Claude for words, ElevenLabs for voice.</blockquote>
+
+      <h2>Multi-Tool AI Workflow</h2>
+
+      <p>Each tool handled a specific phase: Miro for stakeholder workshops and information architecture, Relume for sitemap generation and wireframing, Midjourney for custom hexagonal photography matching the club's branding, Claude for WordPress content and code assistance, and ElevenLabs for German-language video dubbing.</p>
+
+      <div class="pullquote">Prompt engineering for visual consistency across tools is its own discipline. Getting Midjourney to produce a coherent set of hexagonal images required systematic prompt iteration.</div>
+
+      <h2>Change Management</h2>
+
+      <p>The project included staff training — teaching the swim club team to maintain their own site. This change management dimension is often overlooked in AI-assisted projects: building something beautiful is only half the job. The other half is ensuring the client can sustain it.</p>
+    `,
+    tags: ["AI Design", "WordPress", "Midjourney", "Client Project"],
+    summary: "A real client project building a swim club website using six AI tools: Miro (stakeholder workshops), Relume (sitemap/wireframes), Midjourney (custom hexagonal images), Claude (WordPress/code), and ElevenLabs (German dubbing). Demonstrates multi-tool AI orchestration and includes staff training for sustainability.",
+    skills: "Multi-tool AI orchestration, stakeholder management, user research, visual prompt engineering, WordPress development, multilingual content, change management, client training.",
+    technical: "Multi-phase AI workflow: Miro for discovery/IA → Relume for automated sitemap/wireframe generation → Midjourney for custom imagery with systematic prompt iteration for visual consistency (hexagonal theme) → Claude for WordPress content/code → ElevenLabs for German video dubbing. Includes staff training programme for ongoing maintenance."
+  },
+  {
+    id: 7,
+    title: "Put Aside the Bench for the Mark",
+    subtitle: "Why benchmarks are insufficient for choosing an LLM — and how use-case-specific testing reveals surprising truths about model performance.",
+    category: "AI Engineering",
+    date: "July 17, 2024",
+    isAIBuilt: true,
+    tech: ["Python", "Anthropic API", "Statistical Analysis"],
+    repo: "https://github.com/michellepace/anthropic-model-compare",
+    gradient: "linear-gradient(135deg, #2d1b69 0%, #4a2c8a 30%, #7b5ea7 60%, #b794c6 100%)",
+    body: `
+      <p>This article addresses product managers choosing between LLMs. Benchmarks tell you how models perform on standardised tests. But your use case isn't standardised. This project compares five Anthropic models (Haiku 3, Haiku 3.5, Sonnet 3.5 Jun, Sonnet 3.5 Oct, Opus 3) through speed, capability, and cost tests — with surprising results that contradict the marketing hierarchy.</p>
+
+      <h2>Benchmarks Are General</h2>
+
+      <p>Industry benchmarks (MMLU, HumanEval, GSM8K) measure general capability. But if your use case is "extract specific fields from invoices" or "summarise medical notes", the general benchmark ranking may not apply. The only way to know which model serves <em>your</em> needs is to test with <em>your</em> data.</p>
+
+      <blockquote>A model that ranks first on benchmarks might rank third for your specific task. The bench mark tells you about the bench. The mark tells you about your field.</blockquote>
+
+      <h2>Speed and Capability Results</h2>
+
+      <p>The speed tests showed Haiku living up to its name — but the capability tests revealed surprises. Sonnet 3.5 Oct outperformed Opus 3 on the specific use case tested, despite being a "smaller" model. And the cost calculations showed that the speed difference between Haiku and Sonnet made Haiku more expensive per-task in some scenarios due to retry rates.</p>
+
+      <div class="pullquote">The title says it all: put aside the benchmark, focus on the mark. Test with your own data, your own use case, your own success criteria.</div>
+
+      <h2>Future Proofing</h2>
+
+      <p>Model rankings change with every release. The testing methodology matters more than the specific results — build a repeatable evaluation pipeline so you can re-run when new models launch. Your model choice should be a living decision, not a one-time selection.</p>
+    `,
+    tags: ["LLM Evaluation", "Python", "Anthropic API", "Product Management"],
+    summary: "A Python notebook comparing five Anthropic models on speed, capability, and cost for a specific use case. Key finding: benchmark rankings don't predict use-case performance — Sonnet 3.5 Oct outperformed Opus 3 despite being 'smaller'. Argues PMs should build repeatable evaluation pipelines, not rely on marketing hierarchy.",
+    skills: "LLM evaluation methodology, statistical analysis, cost modelling, Python notebook development, API integration, product management decision frameworks.",
+    technical: "Python Jupyter notebook calling the Anthropic API to test five models (Haiku 3/3.5, Sonnet 3.5 Jun/Oct, Opus 3). Measures response time, output quality against ground truth, and calculates per-task cost including retry rates. Statistical analysis reveals that speed leaders can be more expensive per-task when quality-adjusted. Repeatable pipeline design for re-evaluation when new models launch."
+  },
+  {
+    id: 8,
+    title: "Correct Large Documents with Anthropic API",
+    subtitle: "Using Claude's API to find and fix writing errors in 100,000+ word documents across multiple languages — without changing the author's voice.",
+    category: "AI Engineering",
+    date: "July 1, 2024",
+    isAIBuilt: true,
+    tech: ["Python", "Anthropic API", "Chunking", "Semantic Similarity"],
+    repo: "https://github.com/michellepace/word-document-corrector-claude",
+    gradient: "linear-gradient(135deg, #1a1a2e 0%, #2d2d44 30%, #4a4a6a 60%, #7f7fb0 100%)",
+    body: `
+      <p>This project uses the Anthropic API to correct writing mistakes in large Word documents while preserving the author's style and meaning. It works in English, German, French, and Italian, and has been tested on documents up to 100,000 words (240 pages). Claude outperformed Microsoft Word's grammar checker on subtle errors.</p>
+
+      <h2>The Problem</h2>
+
+      <p>Professional documents — manuscripts, reports, legal texts — need proofreading. Human proofreaders are expensive and slow. Word's grammar checker catches obvious errors but misses subtle ones: inconsistent tense in conditional clauses, misplaced modifiers, comma splices that change meaning. An LLM can understand context deeply enough to catch these — but large documents exceed context windows.</p>
+
+      <blockquote>The challenge isn't finding errors — it's fixing them without changing the author's voice. A correction tool that makes everyone sound the same is worse than useless for professional writing.</blockquote>
+
+      <h2>Implementation: Chunking and Validation</h2>
+
+      <p>The solution chunks documents into overlapping segments sized for the API's context window, processes each chunk with style-preservation instructions, and validates corrections using semantic similarity testing — ensuring the corrected text means the same thing as the original. Overlapping chunks prevent errors at segment boundaries.</p>
+
+      <div class="pullquote">Semantic similarity testing as a validation layer: if the corrected text drifts too far from the original meaning, the correction is rejected. This guardrails the LLM's tendency to "improve" rather than just correct.</div>
+
+      <h2>Not Perfect but Aiming</h2>
+
+      <p>The tool isn't perfect — it occasionally over-corrects idiomatic expressions and can struggle with intentionally non-standard grammar in creative writing. But for professional documents, it catches errors that human proofreaders miss while maintaining a false-positive rate low enough to be practical.</p>
+    `,
+    tags: ["Anthropic API", "NLP", "Python", "Document Processing"],
+    summary: "A Python tool using the Anthropic API to correct writing errors in 100k+ word documents across four languages. Uses overlapping chunking to handle context window limits and semantic similarity testing to prevent meaning drift. Outperforms Word's grammar checker on subtle errors while preserving author voice.",
+    skills: "API integration, chunking strategies for large documents, semantic similarity testing, multi-language NLP, prompt engineering for style preservation, automated evaluation.",
+    technical: "Python processing pipeline: Word document parsing → overlapping chunk segmentation (sized for API context window) → per-chunk correction with style-preservation prompts → semantic similarity validation (cosine similarity on embeddings) to reject corrections that drift from original meaning → reassembly with boundary reconciliation. Tested on English, German, French, Italian documents up to 240 pages."
+  },
+  {
+    id: 9,
+    title: "Lessons Learnt on AI Coding a Tiny Python Function",
+    subtitle: "What a simple regex function taught me about prompting, test-driven iteration, and the balance between constraint and AI autonomy.",
+    category: "AI Coding",
+    date: "March 30, 2024",
+    isAIBuilt: false,
+    tech: [],
+    repo: null,
+    gradient: "linear-gradient(135deg, #2c3e50 0%, #3498db 50%, #2ecc71 100%)",
+    body: `
+      <p>I'm not a developer. I asked Claude to generate a regex function that removes Tables of Contents from markdown files. The initial prompt failed spectacularly. What followed was an unexpectedly rich lesson in prompting, test-driven iteration, and the delicate balance between giving AI constraints and giving it creative freedom.</p>
+
+      <h2>The Task</h2>
+
+      <p>Simple brief: write a Python function that identifies and removes auto-generated Table of Contents sections from markdown files. The ToC patterns vary — some use bullet points, some use numbered lists, some have headers, some don't. The function needs to handle all variations without removing legitimate content.</p>
+
+      <blockquote>Being too declarative reduces AI creativity and slows development. My first prompt specified the exact regex pattern to use — which was wrong. When I described the problem instead of the solution, Claude produced a much better approach.</blockquote>
+
+      <h2>Iterating with Claude</h2>
+
+      <p>The breakthrough came from generating tests early. Once I had test cases covering the edge cases (nested ToCs, ToCs with code blocks, ToCs at the end of files), Claude could iterate against concrete success criteria instead of my vague descriptions. The tests became the specification.</p>
+
+      <div class="pullquote">Write good prompts. Let AI be creative. Generate tests early. Use robust pre-prompts. These four lessons apply far beyond regex functions.</div>
+
+      <h2>Conclusion: People and Prompting</h2>
+
+      <p>The biggest lesson wasn't technical — it was about the relationship between human and AI in the development process. The more I constrained Claude's approach, the worse the results. The more I constrained the <em>outcome</em> (through tests), the better the results. Specify what success looks like, not how to achieve it.</p>
+    `,
+    tags: ["Prompting", "Python", "AI Coding", "TDD"],
+    summary: "A non-developer's account of using Claude to build a regex function, revealing key prompting lessons: describing problems beats prescribing solutions, tests-as-specification enables better iteration, and constraining outcomes (not approaches) produces superior AI-generated code.",
+    skills: "Prompt engineering, test-driven development thinking, AI collaboration patterns, iterative development, problem decomposition.",
+    technical: "Used Claude to generate a Python regex function for markdown ToC removal. Initial over-specified prompts produced poor results. Breakthrough: generating test cases first (edge cases: nested ToCs, code blocks, EOF positioning) turned tests into specifications. Claude iterated against concrete pass/fail criteria instead of vague descriptions. Key insight: constrain outcomes (tests), not approaches (implementation details)."
+  },
+  {
+    id: 10,
+    title: "AI Bingo Words For the Silently Confused",
+    subtitle: "A plain-English explanation of AI terminology: Data Science, Machine Learning, Deep Learning, Foundation Models, RAG, and AI Agents.",
+    category: "Product Thinking",
+    date: "January 1, 2024",
+    isAIBuilt: false,
+    tech: [],
+    repo: null,
+    gradient: "linear-gradient(135deg, #f39c12 0%, #e74c3c 40%, #8e44ad 100%)",
+    body: `
+      <p>If you've sat through a meeting where someone said "we need an AI agent with RAG" and you nodded wisely while understanding nothing, this post is for you. It's a visual, jargon-free explanation of how AI terminology fits together — from Data Science at the top to AI Agents at the cutting edge.</p>
+
+      <h2>The Hierarchy</h2>
+
+      <p>Think of it as nesting dolls. Data Science is the biggest doll — it encompasses everything from spreadsheets to neural networks. Inside that sits Machine Learning — algorithms that learn from data instead of being explicitly programmed. Inside ML sits Deep Learning — neural networks with many layers. Inside Deep Learning sit Foundation Models — large pre-trained models like GPT and Claude. And the newest doll is AI Agents — systems that can plan, use tools, and take actions autonomously.</p>
+
+      <blockquote>The surprising truth: traditional Machine Learning still creates more business value than Generative AI. Andrew Ng's research shows ML dominates in industrial safety, computer vision, and recommendation systems — the unglamorous backbone of AI in production.</blockquote>
+
+      <h2>ML vs Gen AI: What Actually Makes Money</h2>
+
+      <p>The examples make it concrete. Machine Learning powers: industrial safety systems (detecting equipment failures before they happen), computer vision (quality inspection on manufacturing lines), and content recommendation (Netflix, Spotify). Generative AI powers: document processing (extracting data from unstructured text), LLM API integration (chatbots, writing assistants), and creative tools (image generation, code completion).</p>
+
+      <div class="pullquote">Understanding the terminology isn't about sounding smart in meetings. It's about knowing which tool fits which problem — and not using a foundation model when a decision tree will do.</div>
+
+      <h2>Conclusion</h2>
+
+      <p>The terminology matters because it shapes decisions. A product manager who confuses ML with Gen AI will misallocate resources. A stakeholder who thinks "AI" means chatbots will miss opportunities in predictive maintenance. Clear language enables clear thinking.</p>
+    `,
+    tags: ["Product Thinking", "AI Terminology", "Machine Learning", "Business Strategy"],
+    summary: "A jargon-free guide to AI terminology, structured as nesting dolls: Data Science → ML → Deep Learning → Foundation Models → AI Agents. Key business insight from Andrew Ng: traditional ML still creates more business value than Gen AI. Understanding the hierarchy prevents misallocating resources and missing opportunities.",
+    skills: "Technical communication, concept simplification, business-AI translation, product management perspective, strategic thinking about AI adoption.",
+    technical: "Conceptual framework mapping AI terminology relationships. Compares ML applications (industrial safety, computer vision, recommendation engines) with Gen AI applications (document processing, LLM APIs, creative tools). References Andrew Ng's research on relative business value. The terminology hierarchy (Data Science ⊃ ML ⊃ Deep Learning ⊃ Foundation Models ⊃ Agents) provides a decision framework for which technology fits which problem."
+  }
+];
+
+const githubSvg = '<svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>';
+
+// Derive categories for filter
+const categories = ['All', ...new Set(posts.map(p => p.category))];
+
+// ═══════════════ ROUTING ═══════════════
+let currentPage = 'journal';
+let previousPage = 'journal';
+let currentPostId = null;
+let journalChatHistory = [];
+
+function navigate(page, skipScroll) {
+  if (page !== 'post') previousPage = currentPage;
+
+  // Update nav
+  document.querySelectorAll('.nav-links a[data-page]').forEach(a => {
+    a.classList.toggle('active', a.dataset.page === page);
+  });
+
+  // Hide all pages
+  document.querySelectorAll('.page').forEach(p => {
+    p.classList.remove('active', 'visible');
+  });
+
+  // Show target page
+  const target = document.getElementById('page-' + page);
+  target.classList.add('active');
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      target.classList.add('visible');
+    });
+  });
+
+  if (!skipScroll) window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  currentPage = page;
+
+  // Build pages on demand
+  if (page === 'journal') buildJournal();
+  if (page === 'aibuilt') buildAIBuilt();
+
+  // Update slide chat context
+  updateSlideChatContext();
+}
+
+function navigateBack() {
+  if (previousPage === 'aibuilt') {
+    navigate('aibuilt');
+  } else {
+    navigate('journal');
+  }
+}
+
+// ═══════════════ JOURNAL PAGE ═══════════════
+let activeFilter = 'All';
+
+function buildJournal() {
+  // Filters
+  const filterContainer = document.getElementById('journal-filters');
+  filterContainer.innerHTML = categories.map(c =>
+    '<button class="filter-btn' + (c === activeFilter ? ' active' : '') + '" onclick="filterJournal(\'' + c.replace(/'/g, "\\'") + '\')">' + c + '</button>'
+  ).join('');
+
+  // List
+  const filtered = activeFilter === 'All' ? posts : posts.filter(p => p.category === activeFilter);
+  const list = document.getElementById('journal-list');
+  list.innerHTML = filtered.map((p, i) =>
+    '<div class="archive-item stagger" onclick="openPost(' + p.id + ')" style="animation-delay: ' + (0.05 + i * 0.07) + 's">' +
+      '<span class="date">' + formatShortDate(p.date) + '</span>' +
+      '<h3>' + p.title + '</h3>' +
+      '<span class="category-label">' + p.category + '</span>' +
+    '</div>'
+  ).join('');
+}
+
+function filterJournal(cat) {
+  activeFilter = cat;
+  buildJournal();
+}
+
+function formatShortDate(dateStr) {
+  return dateStr
+    .replace(', 2025', "'25").replace(', 2024', "'24")
+    .replace('January', 'Jan').replace('February', 'Feb').replace('March', 'Mar')
+    .replace('April', 'Apr').replace('May', 'May').replace('June', 'Jun')
+    .replace('July', 'Jul').replace('August', 'Aug').replace('September', 'Sep')
+    .replace('October', 'Oct').replace('November', 'Nov').replace('December', 'Dec');
+}
+
+// ═══════════════ AI BUILT PAGE ═══════════════
+function buildAIBuilt() {
+  const aiBuiltPosts = posts.filter(p => p.isAIBuilt);
+  const grid = document.getElementById('aibuilt-grid');
+  grid.innerHTML = aiBuiltPosts.map((p, i) =>
+    '<div class="aibuilt-card stagger" style="animation-delay: ' + (0.05 + i * 0.08) + 's">' +
+      '<div class="aibuilt-card-visual" onclick="openPost(' + p.id + ', \'aibuilt\')" style="cursor:pointer">' +
+        '<div class="gradient" style="background: ' + p.gradient + ';"></div>' +
+        '<div class="card-label">' + p.category + '</div>' +
+      '</div>' +
+      '<div class="aibuilt-card-body" onclick="openPost(' + p.id + ', \'aibuilt\')" style="cursor:pointer">' +
+        '<h3>' + p.title + '</h3>' +
+        '<p class="card-desc">' + p.subtitle + '</p>' +
+        '<div class="aibuilt-card-tech">' +
+          p.tech.map(t => '<span class="tech-pill">' + t + '</span>').join('') +
+        '</div>' +
+      '</div>' +
+      '<div class="aibuilt-card-footer">' +
+        '<a class="read-link" onclick="openPost(' + p.id + ', \'aibuilt\')">Read full post &rarr;</a>' +
+        (p.repo ? '<a class="repo-link" href="' + p.repo + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + githubSvg + '</a>' : '') +
+      '</div>' +
+    '</div>'
+  ).join('');
+}
+
+// ═══════════════ POST PAGE ═══════════════
+function openPost(id, from) {
+  const post = posts[id];
+  if (!post) return;
+
+  if (from) previousPage = from;
+
+  currentPostId = id;
+
+  // Update back link
+  const backLink = document.getElementById('post-back-link');
+  backLink.textContent = previousPage === 'aibuilt' ? '\u2190 Back to AI Built' : '\u2190 Back to Journal';
+
+  document.getElementById('post-category').textContent = post.category;
+  document.getElementById('post-title').textContent = post.title;
+  document.getElementById('post-subtitle').textContent = post.subtitle;
+  document.getElementById('post-date').textContent = post.date;
+  document.getElementById('post-body').innerHTML = post.body +
+    '<div class="article-tags">' + post.tags.map(t => '<span>' + t + '</span>').join('') + '</div>';
+
+  // Update post chat context
+  document.getElementById('post-chat-context').textContent = post.title;
+
+  // Reset post chat
+  resetPostChat();
+
+  navigate('post');
+}
+
+function resetPostChat() {
+  const messages = document.getElementById('post-chat-messages');
+  messages.innerHTML = '<div class="chat-welcome">I\'ve read this post. Ask me anything about it!</div>';
+}
+
+// ═══════════════ CHAT SYSTEM ═══════════════
+const journalResponses = {
+  "What are Michelle's key skills?": "Michelle combines <strong>product management</strong> with hands-on <strong>AI engineering</strong>. Her key skills include:\n\n\u2022 <strong>AI-assisted development</strong> \u2014 Claude Code, Anthropic API, agentic patterns\n\u2022 <strong>Test-driven development</strong> \u2014 tests as specifications, not afterthoughts\n\u2022 <strong>End-to-end project delivery</strong> \u2014 from stakeholder research to deployed tools\n\u2022 <strong>Technical teaching</strong> \u2014 making complex concepts accessible to non-technical audiences\n\u2022 <strong>Product thinking</strong> \u2014 choosing the right tool for the problem, not the trendiest one",
+
+  "Summarise her latest project": "Michelle's most recent project is <strong>Claude Code Plugins & Marketplaces</strong> (December 2025). It explains how Claude Code packages reusable AI capabilities \u2014 commands, skills, and agents \u2014 into plugins with manifest files, and distributes them through marketplace registries.\n\nThink of it as npm for AI tooling. The post demonstrates her understanding of <strong>platform architecture</strong> and <strong>developer experience design</strong>.",
+
+  "What's her learning journey?": "Michelle's portfolio shows a clear learning arc over two years:\n\n\u2022 <strong>Jan 2024</strong> \u2014 Started with \"AI Bingo Words\" \u2014 explaining AI terminology for non-technical readers\n\u2022 <strong>Mar 2024</strong> \u2014 First hands-on coding: learning prompting through a tiny Python function\n\u2022 <strong>Jul 2024</strong> \u2014 API-level work: building document correctors and model comparison tools\n\u2022 <strong>Oct 2024</strong> \u2014 Real client work: swim club website with multi-tool AI workflow\n\u2022 <strong>2025</strong> \u2014 Claude Code mastery: TDD, agentic patterns, data analysis\n\u2022 <strong>Dec 2025</strong> \u2014 Plugin architecture: designing platforms, not just using tools\n\nThe arc goes from <em>understanding AI</em> to <em>building with AI</em> to <em>designing AI systems</em>."
+};
+
+const journalFallback = "That's an interesting question! Based on Michelle's portfolio, I can tell you she's an AI-first Product Manager who builds real tools \u2014 from Python CLIs to plugin architectures. Her work demonstrates both technical depth and the ability to communicate complex ideas clearly. Try asking about her key skills, latest project, or learning journey for more specific insights.";
+
+const postFallback = "Great question! Based on this post, I can see it demonstrates Michelle's approach to AI-assisted development \u2014 combining product thinking with hands-on engineering. Try the prompt buttons above for specific angles: a summary, skills analysis, or technical breakdown.";
+
+function getPostResponse(postId, question) {
+  const post = posts[postId];
+  if (!post) return postFallback;
+
+  if (question === 'Summarise this in 3 sentences') {
+    return post.summary;
+  }
+  if (question === 'What skills does this demonstrate?') {
+    return post.skills;
+  }
+  if (question === 'Explain the technical approach') {
+    return post.technical;
+  }
+
+  return "Based on <strong>" + post.title + "</strong>: " + postFallback;
+}
+
+function addMessage(containerId, text, type) {
+  const container = document.getElementById(containerId);
+  // Remove welcome message if present
+  const welcome = container.querySelector('.chat-welcome');
+  if (welcome) welcome.remove();
+
+  const msg = document.createElement('div');
+  msg.className = 'chat-message ' + type;
+  msg.innerHTML = text;
+  container.appendChild(msg);
+  container.scrollTop = container.scrollHeight;
+}
+
+function showTypingIndicator(containerId) {
+  const container = document.getElementById(containerId);
+  const indicator = document.createElement('div');
+  indicator.className = 'typing-indicator';
+  indicator.id = containerId + '-typing';
+  indicator.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+  container.appendChild(indicator);
+  container.scrollTop = container.scrollHeight;
+}
+
+function removeTypingIndicator(containerId) {
+  const indicator = document.getElementById(containerId + '-typing');
+  if (indicator) indicator.remove();
+}
+
+function sendChat(context, presetText) {
+  const inputId = context + '-chat-input';
+  const messagesId = context + '-chat-messages';
+  const input = document.getElementById(inputId);
+  const text = presetText || input.value.trim();
+
+  if (!text) return;
+  if (!presetText) input.value = '';
+
+  // Add user message
+  addMessage(messagesId, text, 'user');
+
+  // Show typing
+  showTypingIndicator(messagesId);
+
+  // Get response
+  const delay = 800 + Math.random() * 700;
+  setTimeout(() => {
+    removeTypingIndicator(messagesId);
+
+    let response;
+    if (context === 'journal') {
+      response = journalResponses[text] || journalFallback;
+    } else {
+      response = getPostResponse(currentPostId, text);
+    }
+
+    addMessage(messagesId, response, 'ai');
+  }, delay);
+}
+
+// ═══════════════ SLIDE-OUT CHAT (mobile) ═══════════════
+function updateSlideChatContext() {
+  const title = document.getElementById('slide-chat-title');
+  const subtitle = document.getElementById('slide-chat-subtitle');
+  const prompts = document.getElementById('slide-chat-prompts');
+
+  if (currentPage === 'post' && currentPostId !== null) {
+    const post = posts[currentPostId];
+    title.textContent = 'Ask about this post';
+    subtitle.textContent = post.title;
+    prompts.innerHTML =
+      '<button class="prompt-pill" onclick="sendSlideChat(\'Summarise this in 3 sentences\')">Summarise</button>' +
+      '<button class="prompt-pill" onclick="sendSlideChat(\'What skills does this demonstrate?\')">Skills shown?</button>' +
+      '<button class="prompt-pill" onclick="sendSlideChat(\'Explain the technical approach\')">Technical approach?</button>';
+  } else {
+    title.textContent = "Ask about Michelle's work";
+    subtitle.textContent = 'AI-powered portfolio assistant';
+    prompts.innerHTML =
+      '<button class="prompt-pill" onclick="sendSlideChat(\'What are Michelle\\\'s key skills?\')">Key skills?</button>' +
+      '<button class="prompt-pill" onclick="sendSlideChat(\'Summarise her latest project\')">Latest project?</button>' +
+      '<button class="prompt-pill" onclick="sendSlideChat(\'What\\\'s her learning journey?\')">Learning journey?</button>';
+  }
+}
+
+function openSlideChat() {
+  updateSlideChatContext();
+  const overlay = document.getElementById('chat-slide-overlay');
+  const panel = document.getElementById('chat-slide-panel');
+  overlay.classList.add('active');
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      overlay.classList.add('visible');
+      panel.classList.add('open');
+    });
+  });
+}
+
+function closeSlideChat() {
+  const overlay = document.getElementById('chat-slide-overlay');
+  const panel = document.getElementById('chat-slide-panel');
+  overlay.classList.remove('visible');
+  panel.classList.remove('open');
+  setTimeout(() => overlay.classList.remove('active'), 400);
+}
+
+function sendSlideChat(presetText) {
+  const input = document.getElementById('slide-chat-input');
+  const messagesId = 'slide-chat-messages';
+  const text = presetText || input.value.trim();
+
+  if (!text) return;
+  if (!presetText) input.value = '';
+
+  addMessage(messagesId, text, 'user');
+  showTypingIndicator(messagesId);
+
+  const delay = 800 + Math.random() * 700;
+  setTimeout(() => {
+    removeTypingIndicator(messagesId);
+
+    let response;
+    if (currentPage === 'post' && currentPostId !== null) {
+      response = getPostResponse(currentPostId, text);
+    } else {
+      response = journalResponses[text] || journalFallback;
+    }
+
+    addMessage(messagesId, response, 'ai');
+  }, delay);
+}
+
+// ═══════════════ NAV SCROLL ═══════════════
+window.addEventListener('scroll', () => {
+  const navbar = document.getElementById('navbar');
+  navbar.classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// ═══════════════ KEYBOARD ═══════════════
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeSlideChat();
+});
+
+// ═══════════════ INIT ═══════════════
+document.addEventListener('DOMContentLoaded', () => {
+  buildJournal();
+  navigate('journal', true);
+  document.getElementById('page-journal').classList.add('visible');
+});
+</script>
+
+</body>
+</html>

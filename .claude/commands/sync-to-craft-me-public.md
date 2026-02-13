@@ -12,6 +12,7 @@ Sync **git-committed versions** of selected files to `~/projects/markdown/craft-
 
 - `.claude/` (recursive)
 - `portfolio/` (recursive)
+- `quick-proto/` (recursive)
 - `README.md`
 - `ailearnlog.jpg`
 
@@ -53,14 +54,14 @@ echo "✅ Target: $TARGET"
 echo ""
 
 echo "[2/6] Cleaning target directories..."
-rm -rf "$TARGET/.claude" "$TARGET/portfolio"
+rm -rf "$TARGET/.claude" "$TARGET/portfolio" "$TARGET/quick-proto"
 rm -f "$TARGET/README.md" "$TARGET/ailearnlog.jpg"
 echo "✅ Target cleaned"
 echo ""
 
 echo "[3/6] Exporting committed files from HEAD..."
 cd "$SOURCE"
-git archive HEAD .claude/ portfolio/ README.md ailearnlog.jpg | tar -x -C "$TARGET"
+git archive HEAD .claude/ portfolio/ quick-proto/ README.md ailearnlog.jpg | tar -x -C "$TARGET"
 echo "✅ Exported to $TARGET"
 echo ""
 

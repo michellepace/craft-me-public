@@ -1,0 +1,1848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marginalia — A Blog</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --ink: #1a1714;
+  --paper: #f5f0e8;
+  --cream: #ede7db;
+  --warm-gray: #a89f91;
+  --accent: #c4450a;
+  --accent-light: #e8673a;
+  --muted: #6b6359;
+  --rule: #d4cdc0;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans: 'Outfit', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --transition: 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html { font-size: 16px; scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Grain overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+/* ═══════════════ NAVIGATION ═══════════════ */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 1.25rem 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(245, 240, 232, 0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--rule);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+nav.scrolled {
+  box-shadow: 0 1px 20px rgba(26, 23, 20, 0.06);
+}
+
+.nav-brand {
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  cursor: pointer;
+  transition: color var(--transition);
+}
+
+.nav-brand:hover { color: var(--accent); }
+
+.nav-brand span {
+  font-weight: 400;
+  font-style: italic;
+  color: var(--accent);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.nav-links a {
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  cursor: pointer;
+  position: relative;
+  transition: color var(--transition);
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 1.5px;
+  background: var(--accent);
+  transition: width var(--transition);
+}
+
+.nav-links a:hover { color: var(--ink); }
+.nav-links a:hover::after { width: 100%; }
+.nav-links a.active { color: var(--ink); }
+.nav-links a.active::after { width: 100%; }
+
+.nav-subscribe {
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.55rem 1.4rem;
+  background: var(--ink);
+  color: var(--paper);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.nav-subscribe:hover {
+  background: var(--accent);
+  transform: translateY(-1px);
+}
+
+/* ═══════════════ PAGES ═══════════════ */
+.page {
+  display: none;
+  min-height: 100vh;
+  padding-top: 5rem;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.page.active {
+  display: block;
+}
+
+.page.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ═══════════════ HOME PAGE ═══════════════ */
+
+/* Hero */
+.hero {
+  padding: 4rem 2.5rem 3rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.hero-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.hero-label::before {
+  content: '';
+  width: 2rem;
+  height: 1.5px;
+  background: var(--accent);
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+.hero-main {
+  cursor: pointer;
+  position: relative;
+}
+
+.hero-img {
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: linear-gradient(135deg, #2c2520 0%, #4a3f35 40%, #6b5d4f 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-img::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(26,23,20,0.5) 0%, transparent 50%);
+}
+
+.hero-img .img-pattern {
+  position: absolute;
+  inset: 0;
+  opacity: 0.15;
+  background-image:
+    radial-gradient(circle at 30% 40%, rgba(196,69,10,0.4) 0%, transparent 50%),
+    radial-gradient(circle at 70% 60%, rgba(232,103,58,0.3) 0%, transparent 40%);
+}
+
+.hero-content {
+  padding-top: 1.5rem;
+}
+
+.hero-content .category-tag {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.75rem;
+}
+
+.hero-content h2 {
+  font-family: var(--serif);
+  font-size: 2.6rem;
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  margin-bottom: 1rem;
+  transition: color var(--transition);
+}
+
+.hero-main:hover .hero-content h2 { color: var(--accent); }
+
+.hero-content .excerpt {
+  font-size: 1.02rem;
+  color: var(--muted);
+  line-height: 1.65;
+  margin-bottom: 1.25rem;
+  max-width: 540px;
+}
+
+.hero-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+  color: var(--warm-gray);
+}
+
+.hero-meta .author { font-weight: 500; color: var(--ink); }
+.hero-meta .sep { color: var(--rule); }
+
+/* Hero sidebar posts */
+.hero-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-top: 2px solid var(--ink);
+  padding-top: 1.5rem;
+}
+
+.hero-sidebar-post {
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--rule);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.hero-sidebar-post:hover { padding-left: 0.75rem; }
+
+.hero-sidebar-post .category-tag {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.4rem;
+}
+
+.hero-sidebar-post h3 {
+  font-family: var(--serif);
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1.25;
+  margin-bottom: 0.5rem;
+  transition: color var(--transition);
+}
+
+.hero-sidebar-post:hover h3 { color: var(--accent); }
+
+.hero-sidebar-post .meta {
+  font-size: 0.75rem;
+  color: var(--warm-gray);
+}
+
+/* Section divider */
+.section-divider {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2.5rem;
+}
+
+.section-divider hr {
+  border: none;
+  border-top: 1px solid var(--rule);
+}
+
+/* Section header */
+.section-header {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2.5rem 2.5rem 1.5rem;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.section-header h2 {
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.section-header .view-all {
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color var(--transition);
+}
+
+.section-header .view-all:hover { color: var(--accent-light); }
+
+/* Post grid */
+.post-grid {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2.5rem 4rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.post-card {
+  cursor: pointer;
+  transition: transform var(--transition);
+}
+
+.post-card:hover { transform: translateY(-4px); }
+
+.post-card-img {
+  width: 100%;
+  aspect-ratio: 3/2;
+  margin-bottom: 1.1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.post-card-img .gradient {
+  position: absolute;
+  inset: 0;
+}
+
+.post-card .category-tag {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+
+.post-card h3 {
+  font-family: var(--serif);
+  font-size: 1.4rem;
+  font-weight: 600;
+  line-height: 1.25;
+  margin-bottom: 0.5rem;
+  transition: color var(--transition);
+}
+
+.post-card:hover h3 { color: var(--accent); }
+
+.post-card .excerpt {
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.55;
+  margin-bottom: 0.75rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.post-card .meta {
+  font-size: 0.75rem;
+  color: var(--warm-gray);
+}
+
+/* Newsletter band */
+.newsletter-band {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 4.5rem 2.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.newsletter-band::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.06;
+  background: radial-gradient(circle at 20% 50%, var(--accent) 0%, transparent 50%),
+              radial-gradient(circle at 80% 50%, var(--accent-light) 0%, transparent 50%);
+}
+
+.newsletter-band h2 {
+  font-family: var(--serif);
+  font-size: 2.4rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  position: relative;
+}
+
+.newsletter-band p {
+  font-size: 0.95rem;
+  color: var(--warm-gray);
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.newsletter-form {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  max-width: 480px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.newsletter-form input {
+  flex: 1;
+  padding: 0.85rem 1.2rem;
+  font-family: var(--sans);
+  font-size: 0.88rem;
+  background: rgba(245, 240, 232, 0.08);
+  border: 1px solid rgba(245, 240, 232, 0.15);
+  color: var(--paper);
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+.newsletter-form input::placeholder { color: var(--warm-gray); }
+.newsletter-form input:focus { border-color: var(--accent); }
+
+.newsletter-form button {
+  padding: 0.85rem 2rem;
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--accent);
+  color: var(--paper);
+  border: none;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.newsletter-form button:hover { background: var(--accent-light); }
+
+/* ═══════════════ ARTICLE PAGE ═══════════════ */
+.article-page {
+  padding-top: 6rem;
+}
+
+.article-header {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 2.5rem 2.5rem;
+  text-align: center;
+}
+
+.article-header .back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+  margin-bottom: 2.5rem;
+  transition: color var(--transition);
+}
+
+.article-header .back-link:hover { color: var(--accent); }
+
+.article-header .category-tag {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+
+.article-header h1 {
+  font-family: var(--serif);
+  font-size: 3.2rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  margin-bottom: 1.25rem;
+}
+
+.article-header .subtitle {
+  font-size: 1.15rem;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.article-author-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.author-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--paper);
+}
+
+.article-author-info {
+  text-align: left;
+}
+
+.article-author-info .name {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.article-author-info .date {
+  font-size: 0.78rem;
+  color: var(--warm-gray);
+}
+
+.article-hero-img {
+  max-width: 1000px;
+  margin: 0 auto 3rem;
+  padding: 0 2.5rem;
+}
+
+.article-hero-img .img-placeholder {
+  width: 100%;
+  aspect-ratio: 16/9;
+  position: relative;
+  overflow: hidden;
+}
+
+.article-hero-img .img-placeholder .gradient {
+  position: absolute;
+  inset: 0;
+}
+
+.article-body {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 2.5rem 4rem;
+}
+
+.article-body p {
+  font-family: var(--serif);
+  font-size: 1.2rem;
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+  color: #2a2520;
+}
+
+.article-body h2 {
+  font-family: var(--serif);
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  letter-spacing: -0.01em;
+}
+
+.article-body blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 0.5rem 0 0.5rem 1.5rem;
+  margin: 2rem 0;
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  font-style: italic;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.article-body .pullquote {
+  font-family: var(--serif);
+  font-size: 1.8rem;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: center;
+  color: var(--accent);
+  padding: 2.5rem 1rem;
+  margin: 2.5rem 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+.article-body code {
+  font-family: var(--mono);
+  font-size: 0.88em;
+  background: var(--cream);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+}
+
+.article-tags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--rule);
+}
+
+.article-tags span {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--rule);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.article-tags span:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Related posts */
+.related-posts {
+  background: var(--cream);
+  padding: 4rem 2.5rem;
+}
+
+.related-posts h2 {
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.related-grid {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+.related-card {
+  display: flex;
+  gap: 1.25rem;
+  cursor: pointer;
+  padding: 1.25rem;
+  transition: all var(--transition);
+  background: var(--paper);
+}
+
+.related-card:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(26,23,20,0.08); }
+
+.related-card-img {
+  width: 140px;
+  min-height: 100px;
+  flex-shrink: 0;
+}
+
+.related-card-img .gradient {
+  width: 100%;
+  height: 100%;
+}
+
+.related-card-content .category-tag {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.35rem;
+}
+
+.related-card-content h3 {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 0.35rem;
+}
+
+.related-card:hover h3 { color: var(--accent); }
+
+.related-card-content .meta {
+  font-size: 0.72rem;
+  color: var(--warm-gray);
+}
+
+/* ═══════════════ ARCHIVE PAGE ═══════════════ */
+.archive-header {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 3rem 2.5rem 2rem;
+}
+
+.archive-header h1 {
+  font-family: var(--serif);
+  font-size: 2.8rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+
+.archive-header p {
+  font-size: 1rem;
+  color: var(--muted);
+}
+
+.archive-filters {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2.5rem 2rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.5rem 1.2rem;
+  border: 1px solid var(--rule);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.filter-btn:hover { border-color: var(--ink); color: var(--ink); }
+.filter-btn.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+.archive-list {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2.5rem 4rem;
+}
+
+.archive-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 2rem;
+  align-items: baseline;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--rule);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.archive-item:first-child { border-top: 2px solid var(--ink); }
+
+.archive-item:hover { padding-left: 1rem; }
+
+.archive-item .date {
+  font-size: 0.78rem;
+  font-family: var(--mono);
+  color: var(--warm-gray);
+  min-width: 100px;
+}
+
+.archive-item h3 {
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  font-weight: 600;
+  transition: color var(--transition);
+}
+
+.archive-item:hover h3 { color: var(--accent); }
+
+.archive-item .category-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* ═══════════════ ABOUT PAGE ═══════════════ */
+.about-content {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 3rem 2.5rem 5rem;
+}
+
+.about-content h1 {
+  font-family: var(--serif);
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 2rem;
+}
+
+.about-content h1 em {
+  color: var(--accent);
+  font-style: italic;
+}
+
+.about-intro {
+  font-family: var(--serif);
+  font-size: 1.35rem;
+  line-height: 1.7;
+  color: var(--muted);
+  margin-bottom: 2.5rem;
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.about-body p {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+  color: #2a2520;
+}
+
+.about-body h2 {
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.about-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  margin: 3rem 0;
+  padding: 2.5rem 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+.about-stat .number {
+  font-family: var(--serif);
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 0.3rem;
+}
+
+.about-stat .label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+}
+
+/* ═══════════════ FOOTER ═══════════════ */
+footer {
+  background: var(--ink);
+  color: var(--warm-gray);
+  padding: 4rem 2.5rem 2rem;
+}
+
+.footer-grid {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 3rem;
+  padding-bottom: 3rem;
+  border-bottom: 1px solid rgba(245,240,232,0.08);
+}
+
+.footer-brand {
+  font-family: var(--serif);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--paper);
+  margin-bottom: 0.75rem;
+}
+
+.footer-brand span { font-style: italic; color: var(--accent); font-weight: 400; }
+
+.footer-desc {
+  font-size: 0.88rem;
+  line-height: 1.6;
+  max-width: 280px;
+}
+
+.footer-col h4 {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--paper);
+  margin-bottom: 1rem;
+}
+
+.footer-col a {
+  display: block;
+  font-size: 0.88rem;
+  color: var(--warm-gray);
+  text-decoration: none;
+  margin-bottom: 0.6rem;
+  cursor: pointer;
+  transition: color var(--transition);
+}
+
+.footer-col a:hover { color: var(--paper); }
+
+.footer-bottom {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding-top: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+}
+
+/* ═══════════════ MODAL ═══════════════ */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 23, 20, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-overlay.visible {
+  opacity: 1;
+}
+
+.modal {
+  background: var(--paper);
+  padding: 3rem;
+  max-width: 440px;
+  width: 90%;
+  text-align: center;
+  position: relative;
+  transform: translateY(20px) scale(0.97);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.modal-overlay.visible .modal {
+  transform: translateY(0) scale(1);
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: var(--muted);
+  transition: color var(--transition);
+}
+
+.modal-close:hover { color: var(--ink); }
+
+.modal h3 {
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.modal p {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.modal input {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  border: 1px solid var(--rule);
+  background: transparent;
+  outline: none;
+  margin-bottom: 0.75rem;
+  transition: border-color var(--transition);
+}
+
+.modal input:focus { border-color: var(--accent); }
+
+.modal button.cta {
+  width: 100%;
+  padding: 0.85rem;
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--ink);
+  color: var(--paper);
+  border: none;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.modal button.cta:hover { background: var(--accent); }
+
+.modal .success-msg {
+  display: none;
+  padding: 1rem;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* ═══════════════ ANIMATIONS ═══════════════ */
+.stagger { opacity: 0; transform: translateY(16px); animation: fadeUp 0.6s ease forwards; }
+.stagger:nth-child(1) { animation-delay: 0.05s; }
+.stagger:nth-child(2) { animation-delay: 0.12s; }
+.stagger:nth-child(3) { animation-delay: 0.19s; }
+.stagger:nth-child(4) { animation-delay: 0.26s; }
+.stagger:nth-child(5) { animation-delay: 0.33s; }
+.stagger:nth-child(6) { animation-delay: 0.40s; }
+
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══════════════ SCROLLBAR ═══════════════ */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--cream); }
+::-webkit-scrollbar-thumb { background: var(--warm-gray); }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+/* ═══════════════ RESPONSIVE ═══════════════ */
+@media (max-width: 900px) {
+  .hero-grid { grid-template-columns: 1fr; }
+  .post-grid { grid-template-columns: repeat(2, 1fr); }
+  .related-grid { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .about-stats { grid-template-columns: repeat(3, 1fr); }
+  .article-header h1 { font-size: 2.4rem; }
+}
+
+@media (max-width: 600px) {
+  nav { padding: 1rem 1.25rem; }
+  .nav-links { gap: 1rem; }
+  .hero { padding: 2.5rem 1.25rem 2rem; }
+  .hero-content h2 { font-size: 1.8rem; }
+  .post-grid { grid-template-columns: 1fr; padding: 0 1.25rem 3rem; }
+  .section-header { padding: 2rem 1.25rem 1rem; }
+  .archive-header { padding: 2rem 1.25rem 1rem; }
+  .archive-header h1 { font-size: 2rem; }
+  .archive-filters { padding: 0 1.25rem 1.5rem; }
+  .archive-item { grid-template-columns: 1fr; gap: 0.25rem; }
+  .archive-item .category-label { display: none; }
+  .article-header h1 { font-size: 2rem; }
+  .about-content { padding: 2rem 1.25rem 3rem; }
+  .about-content h1 { font-size: 2.2rem; }
+  .about-stats { grid-template-columns: 1fr; gap: 1.5rem; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .newsletter-band { padding: 3rem 1.25rem; }
+  .newsletter-band h2 { font-size: 1.6rem; }
+  .newsletter-form { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ NAVIGATION ═══════════════ -->
+<nav id="navbar">
+  <div class="nav-brand" onclick="navigate('home')">Marginalia<span>.</span></div>
+  <div class="nav-links">
+    <a onclick="navigate('home')" class="active" data-page="home">Journal</a>
+    <a onclick="navigate('archive')" data-page="archive">Archive</a>
+    <a onclick="navigate('about')" data-page="about">About</a>
+    <button class="nav-subscribe" onclick="openSubscribeModal()">Subscribe</button>
+  </div>
+</nav>
+
+<!-- ═══════════════ HOME PAGE ═══════════════ -->
+<div class="page active" id="page-home">
+
+  <section class="hero">
+    <div class="hero-label">Featured Story</div>
+    <div class="hero-grid">
+      <div class="hero-main stagger" onclick="openArticle(0)">
+        <div class="hero-img">
+          <div class="img-pattern"></div>
+        </div>
+        <div class="hero-content">
+          <div class="category-tag">Architecture</div>
+          <h2>The Vanishing Bookshop: How Physical Spaces Shape Digital Thinking</h2>
+          <p class="excerpt">When the last independent bookshop on Charing Cross Road closed its doors, it wasn't just a retail failure — it was the end of a particular way of encountering ideas by accident.</p>
+          <div class="hero-meta">
+            <span class="author">Elena Marchetti</span>
+            <span class="sep">/</span>
+            <span>February 8, 2026</span>
+            <span class="sep">/</span>
+            <span>12 min read</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-sidebar">
+        <div class="hero-sidebar-post stagger" onclick="openArticle(1)">
+          <div class="category-tag">Technology</div>
+          <h3>Why Your Code Editor Is a Political Statement</h3>
+          <div class="meta">James Okafor &middot; Feb 5, 2026</div>
+        </div>
+        <div class="hero-sidebar-post stagger" onclick="openArticle(2)">
+          <div class="category-tag">Culture</div>
+          <h3>The Second Life of Vinyl: Nostalgia as Interface Design</h3>
+          <div class="meta">Maren Ishida &middot; Feb 2, 2026</div>
+        </div>
+        <div class="hero-sidebar-post stagger" onclick="openArticle(3)">
+          <div class="category-tag">Design</div>
+          <h3>Helvetica's Quiet Tyranny and the Fonts We Forgot</h3>
+          <div class="meta">Luca Ferreira &middot; Jan 29, 2026</div>
+        </div>
+        <div class="hero-sidebar-post stagger" onclick="openArticle(4)">
+          <div class="category-tag">Philosophy</div>
+          <h3>On Walking Without a Destination</h3>
+          <div class="meta">Elena Marchetti &middot; Jan 24, 2026</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"><hr></div>
+
+  <div class="section-header">
+    <h2>Recent Writing</h2>
+    <a class="view-all" onclick="navigate('archive')">View archive &rarr;</a>
+  </div>
+
+  <div class="post-grid">
+    <div class="post-card stagger" onclick="openArticle(5)">
+      <div class="post-card-img">
+        <div class="gradient" style="background: linear-gradient(135deg, #3d5a3e 0%, #7a9f5b 50%, #c8d8a0 100%);"></div>
+      </div>
+      <div class="category-tag">Ecology</div>
+      <h3>Rewilding the Margins: Notes from an Urban Garden</h3>
+      <p class="excerpt">Between the cracks of the pavement, a guerrilla ecosystem thrives. What the weeds can teach us about resilience.</p>
+      <div class="meta">Maren Ishida &middot; Jan 20, 2026 &middot; 8 min</div>
+    </div>
+
+    <div class="post-card stagger" onclick="openArticle(6)">
+      <div class="post-card-img">
+        <div class="gradient" style="background: linear-gradient(135deg, #1a1a2e 0%, #4a2c6e 50%, #9b59b6 100%);"></div>
+      </div>
+      <div class="category-tag">Music</div>
+      <h3>The Frequency of Silence: John Cage at 114</h3>
+      <p class="excerpt">How one composer's most controversial piece became the most important artistic statement of our century.</p>
+      <div class="meta">James Okafor &middot; Jan 16, 2026 &middot; 10 min</div>
+    </div>
+
+    <div class="post-card stagger" onclick="openArticle(7)">
+      <div class="post-card-img">
+        <div class="gradient" style="background: linear-gradient(135deg, #8b4513 0%, #d4956a 50%, #f5deb3 100%);"></div>
+      </div>
+      <div class="category-tag">Craft</div>
+      <h3>Against Efficiency: The Case for Making Things Slowly</h3>
+      <p class="excerpt">In an age of instant everything, the deliberate practice of slow-making is not nostalgia — it's resistance.</p>
+      <div class="meta">Luca Ferreira &middot; Jan 12, 2026 &middot; 7 min</div>
+    </div>
+  </div>
+
+  <section class="newsletter-band">
+    <h2>Marginalia, delivered.</h2>
+    <p>A weekly letter on design, culture, and the spaces between. No spam, unsubscribe anytime.</p>
+    <div class="newsletter-form">
+      <input type="email" placeholder="your@email.com">
+      <button onclick="handleNewsletterSubmit(this)">Subscribe</button>
+    </div>
+  </section>
+</div>
+
+<!-- ═══════════════ ARTICLE PAGE ═══════════════ -->
+<div class="page" id="page-article">
+  <div class="article-page">
+    <div class="article-header">
+      <div class="back-link" onclick="navigate('home')">&larr; Back to Journal</div>
+      <div class="category-tag" id="article-category"></div>
+      <h1 id="article-title"></h1>
+      <p class="subtitle" id="article-subtitle"></p>
+      <div class="article-author-row">
+        <div class="author-avatar" id="article-avatar"></div>
+        <div class="article-author-info">
+          <div class="name" id="article-author"></div>
+          <div class="date" id="article-date"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="article-hero-img">
+      <div class="img-placeholder">
+        <div class="gradient" id="article-hero-gradient"></div>
+      </div>
+    </div>
+
+    <div class="article-body" id="article-body"></div>
+
+    <div class="related-posts">
+      <h2>Continue Reading</h2>
+      <div class="related-grid" id="related-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ ARCHIVE PAGE ═══════════════ -->
+<div class="page" id="page-archive">
+  <div class="archive-header">
+    <h1>Archive</h1>
+    <p>Every piece, in reverse chronological order.</p>
+  </div>
+
+  <div class="archive-filters" id="archive-filters"></div>
+
+  <div class="archive-list" id="archive-list"></div>
+</div>
+
+<!-- ═══════════════ ABOUT PAGE ═══════════════ -->
+<div class="page" id="page-about">
+  <div class="about-content">
+    <h1>Writing at the<br><em>margins</em> of things.</h1>
+
+    <p class="about-intro">
+      Marginalia is an independent journal about the overlooked edges of culture — where architecture meets code, where vinyl meets interface design, where a walk without purpose becomes a philosophy.
+    </p>
+
+    <div class="about-body">
+      <p>
+        Founded in 2024, Marginalia began as a series of letters between four writers who couldn't stop noticing connections between seemingly unrelated fields. Elena, an architect turned essayist. James, a software engineer who writes about sound. Maren, a biologist fascinated by design. And Luca, a typographer who thinks everything is political.
+      </p>
+
+      <p>
+        We don't cover news. We don't chase trends. Instead, we look for the quiet patterns — the ways a bookshop's layout mirrors a database schema, the reasons a font feels authoritarian, the ecology growing between pavement cracks.
+      </p>
+
+      <div class="about-stats">
+        <div class="about-stat">
+          <div class="number">247</div>
+          <div class="label">Essays published</div>
+        </div>
+        <div class="about-stat">
+          <div class="number">18k</div>
+          <div class="label">Subscribers</div>
+        </div>
+        <div class="about-stat">
+          <div class="number">4</div>
+          <div class="label">Writers</div>
+        </div>
+      </div>
+
+      <h2>Our Writers</h2>
+
+      <p>
+        <strong>Elena Marchetti</strong> writes about architecture, space, and the philosophy of walking. Based in Rome, she previously worked as an architect at Studio Zaha before turning to writing full-time. Her essay collection <em>Thresholds</em> was longlisted for the Orwell Prize.
+      </p>
+      <p>
+        <strong>James Okafor</strong> is a Lagos-born, London-based software engineer and music writer. He explores the intersections of code, sound, and politics. His newsletter "Compiled" has 12,000 subscribers.
+      </p>
+      <p>
+        <strong>Maren Ishida</strong> is a field biologist and cultural critic based in Kyoto. She writes about ecology, design, and the intelligence of non-human systems. She runs a small urban rewilding project.
+      </p>
+      <p>
+        <strong>Luca Ferreira</strong> is a typographer, designer, and essayist from São Paulo. He is interested in how visual systems shape power and meaning. He teaches typography at the Royal College of Art.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        For pitches, corrections, and love letters: <strong>hello@marginalia.press</strong><br>
+        For press inquiries: <strong>press@marginalia.press</strong>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">Marginalia<span>.</span></div>
+      <p class="footer-desc">An independent journal about the overlooked edges of culture, design, and technology.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Sections</h4>
+      <a onclick="navigate('archive')">Architecture</a>
+      <a onclick="navigate('archive')">Technology</a>
+      <a onclick="navigate('archive')">Culture</a>
+      <a onclick="navigate('archive')">Design</a>
+    </div>
+    <div class="footer-col">
+      <h4>About</h4>
+      <a onclick="navigate('about')">Our Story</a>
+      <a onclick="navigate('about')">Writers</a>
+      <a>Colophon</a>
+      <a>RSS Feed</a>
+    </div>
+    <div class="footer-col">
+      <h4>Connect</h4>
+      <a>Mastodon</a>
+      <a>Bluesky</a>
+      <a>Email</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 Marginalia Press</span>
+    <span>Set in Cormorant Garamond &amp; Outfit</span>
+  </div>
+</footer>
+
+<!-- ═══════════════ SUBSCRIBE MODAL ═══════════════ -->
+<div class="modal-overlay" id="subscribe-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeSubscribeModal()">&times;</button>
+    <h3>Join the margins.</h3>
+    <p>Get our weekly letter on culture, code, and the spaces in between. Thoughtful writing, no noise.</p>
+    <input type="text" placeholder="Your name" id="modal-name">
+    <input type="email" placeholder="your@email.com" id="modal-email">
+    <button class="cta" onclick="handleModalSubscribe()">Subscribe</button>
+    <div class="success-msg" id="modal-success">Welcome to the margins. Check your inbox.</div>
+  </div>
+</div>
+
+<script>
+// ═══════════════ DATA ═══════════════
+const articles = [
+  {
+    id: 0,
+    title: "The Vanishing Bookshop: How Physical Spaces Shape Digital Thinking",
+    subtitle: "When the last independent bookshop on Charing Cross Road closed its doors, it wasn't just a retail failure — it was the end of a particular way of encountering ideas.",
+    category: "Architecture",
+    author: "Elena Marchetti",
+    avatar: "EM",
+    date: "February 8, 2026",
+    readTime: "12 min read",
+    gradient: "linear-gradient(135deg, #2c2520 0%, #4a3f35 40%, #6b5d4f 100%)",
+    body: `
+      <p>The shop at 84 Charing Cross Road closed on a Tuesday. It was raining, which felt too perfect, too literary, like the weather had read the script. The owner, a woman named Dorothy who had inherited the lease from her father, locked the door one final time and walked to the Tube without looking back.</p>
+
+      <p>I happened to be there — not deliberately, but because I was lost. I'd been walking the backstreets of Soho trying to find a particular kind of notebook (Leuchtturm1917, dotted, port red) and had drifted south. When I saw the closed sign and the woman with the key, I understood immediately what had happened.</p>
+
+      <h2>The Architecture of Serendipity</h2>
+
+      <p>What we lose when a bookshop closes is not just a retail space. We lose a particular <em>architecture of serendipity</em> — a physical environment designed, whether consciously or not, to make you encounter things you weren't looking for.</p>
+
+      <blockquote>A bookshop is an algorithm made of wood and paper. Its recommendations emerge from the spatial logic of shelving, the curatorial instincts of its owner, and the simple physics of what catches your eye at shoulder height.</blockquote>
+
+      <p>Consider how a physical bookshop works. You enter looking for one thing. The layout forces you past other things. The staff picks table catches your eye. A cover draws you in. You end up leaving with three books you didn't know existed. This is not a bug — it's the entire point.</p>
+
+      <div class="pullquote">The algorithm of a bookshop is spatial, not statistical. It recommends through proximity, not probability.</div>
+
+      <p>Digital bookstores, for all their convenience, operate on a fundamentally different principle. They show you more of what you've already shown interest in. The famous "customers who bought this also bought" is a narrowing function, not a broadening one. It creates what Eli Pariser called "filter bubbles" — though I prefer the architectural metaphor of corridors. Online shopping is a corridor. A bookshop is an atrium.</p>
+
+      <h2>Space as Interface</h2>
+
+      <p>This matters beyond books. As an architect (in my previous life), I spent years thinking about how physical spaces shape behaviour. A corridor makes you move forward. A courtyard makes you pause. A threshold makes you decide. These are interaction patterns, and they predate software by millennia.</p>
+
+      <p>The most interesting digital interfaces I've encountered borrow from physical space in ways that their designers may not consciously intend. The infinite scroll of social media is a corridor — it removes thresholds, eliminates decision points, keeps you moving. The grid layout of Pinterest is closer to a market stall. The tabbed interface of a browser is an apartment with rooms.</p>
+
+      <p>What no digital interface has yet replicated is the bookshop's particular magic: the structured accident. The moment where the physical arrangement of objects creates a collision between two ideas that would never meet in a recommendation engine.</p>
+
+      <h2>What Comes Next</h2>
+
+      <p>I don't think the answer is simply "save the bookshops" — though we should, where we can. The deeper question is: how do we design digital spaces that preserve serendipity? How do we build recommendation systems that occasionally, deliberately, show us something we would never have chosen?</p>
+
+      <p>Dorothy, the bookshop owner, told me something before she walked away: "People always say they want exactly what they want. But the best customers were the ones who came in and said, 'Surprise me.'"</p>
+
+      <p>I think about that a lot. Maybe the first step toward better digital spaces is admitting that we don't always know what we want — and building systems generous enough to show us what we didn't know we needed.</p>
+    `,
+    tags: ["Architecture", "Digital Culture", "Design", "Serendipity"]
+  },
+  {
+    id: 1,
+    title: "Why Your Code Editor Is a Political Statement",
+    subtitle: "The tools we choose to think with are never neutral. A meditation on Vim, VS Code, and the ideology of interfaces.",
+    category: "Technology",
+    author: "James Okafor",
+    avatar: "JO",
+    date: "February 5, 2026",
+    readTime: "9 min read",
+    gradient: "linear-gradient(135deg, #0f1923 0%, #1e3a5f 50%, #4a8cca 100%)",
+    body: `
+      <p>Here's a confession: I judge people by their code editors. Not consciously, not maliciously, but in the same way you might judge someone by their handwriting or their bookshelves. The tool tells you something about the person.</p>
+
+      <p>A Vim user has made a particular kind of commitment. They've decided that the initial suffering of learning an arcane, decades-old interface is worth the eventual payoff of speed and precision. This is a statement about delayed gratification, about the belief that mastery requires discomfort.</p>
+
+      <h2>The Interface Is the Ideology</h2>
+
+      <p>VS Code, by contrast, is a statement about accessibility and pragmatism. It says: the best tool is the one that works right now, for the most people, with the least friction. It's a democratic tool in the most literal sense — it serves the majority.</p>
+
+      <blockquote>Every interface embeds an argument about how work should be done. The question is whether we're conscious of the argument we're accepting.</blockquote>
+
+      <p>But here's where it gets interesting. These choices scale. The editor you use shapes your habits, which shape your code, which shapes the systems other people interact with. A Vim user's comfort with text-only interfaces might lead them to build more keyboard-accessible applications. A VS Code user's familiarity with visual debugging might lead them to build better error messages.</p>
+
+      <div class="pullquote">We shape our tools, and thereafter our tools shape us. This is not metaphor — it is the literal mechanics of craft.</div>
+
+      <p>I don't think any editor is "right." What I think is that the choice matters more than we admit. Every interface embeds assumptions about how work should be done, what knowledge is worth having, and who the intended user is. When we choose a tool, we're choosing a worldview.</p>
+
+      <h2>Beyond the Editor Wars</h2>
+
+      <p>The real question isn't Vim vs. VS Code vs. Emacs. It's this: are we choosing our tools consciously, or are we inheriting them? Are we using the interface that serves our thinking, or are we letting the interface do our thinking for us?</p>
+
+      <p>The answer, for most of us, is uncomfortable.</p>
+    `,
+    tags: ["Technology", "Code", "Politics", "Interface Design"]
+  },
+  {
+    id: 2,
+    title: "The Second Life of Vinyl: Nostalgia as Interface Design",
+    subtitle: "Why we keep returning to obsolete formats — and what it reveals about our relationship with digital media.",
+    category: "Culture",
+    author: "Maren Ishida",
+    avatar: "MI",
+    date: "February 2, 2026",
+    readTime: "7 min read",
+    gradient: "linear-gradient(135deg, #1a1a1a 0%, #333333 40%, #666666 70%, #1a1a1a 100%)",
+    body: `
+      <p>My turntable cost more than my laptop. I'm aware of how absurd this sounds. The laptop can access every piece of recorded music in human history. The turntable plays one disc at a time, introduces surface noise, and requires me to physically stand up every twenty minutes to flip the record.</p>
+
+      <p>And yet.</p>
+
+      <h2>The Friction Is the Feature</h2>
+
+      <p>The vinyl revival is usually explained as nostalgia, and there's truth in that. But I think it's something more specific: it's a revolt against frictionless design. Spotify is too easy. When everything is one tap away, nothing has weight. The act of choosing becomes meaningless when choosing costs nothing.</p>
+
+      <blockquote>Vinyl asks you to commit. To one album, one side, one listening experience. In an age of infinite choice, that constraint feels less like a limitation and more like a liberation.</blockquote>
+
+      <p>What vinyl provides is what interface designers call "meaningful friction." The physical acts — pulling the record from its sleeve, placing the needle, adjusting the volume — are rituals that create a container for attention. They're not obstacles to the music; they're the threshold that makes the music matter.</p>
+
+      <div class="pullquote">Constraints don't limit experience — they create the conditions for deeper experience.</div>
+
+      <p>I think about this constantly in the context of digital design. We've spent two decades optimizing for frictionlessness, removing every possible obstacle between the user and the content. But what if some of those obstacles were load-bearing? What if the friction was doing work we didn't understand?</p>
+
+      <h2>Designing for Attention</h2>
+
+      <p>The best digital experiences I've encountered recently are ones that have quietly reintroduced friction. Reading apps that remove the scroll bar. Music players that hide the skip button. Cameras that limit you to thirty-six shots. These aren't anti-technology — they're anti-thoughtlessness.</p>
+
+      <p>My turntable is a protest, but it's also a prototype. It's a working model of what technology feels like when it respects your attention instead of competing for it.</p>
+    `,
+    tags: ["Culture", "Music", "Design", "Attention"]
+  },
+  {
+    id: 3,
+    title: "Helvetica's Quiet Tyranny and the Fonts We Forgot",
+    subtitle: "How one typeface came to dominate our visual landscape — and what we lost in the process of standardisation.",
+    category: "Design",
+    author: "Luca Ferreira",
+    avatar: "LF",
+    date: "January 29, 2026",
+    readTime: "11 min read",
+    gradient: "linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 30%, #b0b0b0 70%, #808080 100%)",
+    body: `
+      <p>You are surrounded by Helvetica. It's on the signs in your subway station, the packaging in your kitchen, the interface of your phone. It is, by some measures, the most ubiquitous typeface in human history. And that ubiquity is not an accident — it's an ideology.</p>
+
+      <h2>The Neutrality Myth</h2>
+
+      <p>Helvetica was designed in 1957 by Max Miedinger and Eduard Hoffmann at the Haas Type Foundry in Switzerland. Its stated goal was neutrality — a typeface so clean, so devoid of personality, that it would never interfere with the message it carried. It would be the glass through which content was transparently viewed.</p>
+
+      <blockquote>The idea that a typeface can be "neutral" is itself a political position. It assumes that communication can exist without rhetoric, that form and content are separable. They are not.</blockquote>
+
+      <p>This sounds reasonable until you examine it. The idea that any visual form can be neutral is, at best, naive and, at worst, a power move. Neutrality in design always means "the default of the dominant culture." Helvetica's "neutrality" is Swiss, modernist, corporate, Western. It encodes a very specific set of values while claiming to encode none.</p>
+
+      <div class="pullquote">Neutrality in design is the aesthetic of power pretending to be invisible.</div>
+
+      <h2>The Fonts We Forgot</h2>
+
+      <p>Before Helvetica's dominance, the typographic landscape was radically more diverse. Cities had visual identities that emerged from the accumulated choices of sign painters, letterers, and local printers. Each neighbourhood had its own typographic dialect.</p>
+
+      <p>Walk through the older districts of Lisbon, Tokyo, or Buenos Aires and you can still see traces of this diversity — hand-painted shop signs, idiosyncratic lettering, typefaces chosen for personality rather than professionalism. These aren't quaint relics. They're evidence of a richer way of thinking about how text meets the eye.</p>
+
+      <p>I'm not arguing against Helvetica specifically. I'm arguing against the monoculture it represents — the idea that one way of presenting text is sufficient for all contexts, cultures, and messages. Typography is a form of voice, and a world with one dominant typeface is a world with one dominant accent.</p>
+    `,
+    tags: ["Design", "Typography", "Culture", "Power"]
+  },
+  {
+    id: 4,
+    title: "On Walking Without a Destination",
+    subtitle: "The ancient art of the flâneur, updated for an age of GPS and step counters.",
+    category: "Philosophy",
+    author: "Elena Marchetti",
+    avatar: "EM",
+    date: "January 24, 2026",
+    readTime: "6 min read",
+    gradient: "linear-gradient(135deg, #c9b99a 0%, #a89070 40%, #6b5d4f 100%)",
+    body: `
+      <p>I walk every day without knowing where I'm going. This is not metaphorical. I literally leave my apartment in Trastevere, pick a direction based on nothing more than the angle of the light, and walk until something stops me — a courtyard I haven't seen, a conversation overheard, a cat asleep in an impossible location.</p>
+
+      <p>My phone stays in my pocket. My step counter goes unread. I do not optimize my route.</p>
+
+      <h2>The Flâneur's Return</h2>
+
+      <p>The French have a word for this: <em>flânerie</em>, the art of strolling. The flâneur, as described by Baudelaire and later by Walter Benjamin, is a figure who moves through the city as a form of reading — interpreting the urban text through the act of aimless walking.</p>
+
+      <blockquote>To walk without a destination is to refuse the tyranny of efficiency. It is to insist that not every movement needs a purpose, not every hour needs a metric.</blockquote>
+
+      <p>The flâneur fell out of fashion for obvious reasons. Efficiency won. The idea that you would spend an afternoon walking without purpose became, in the productivity-obsessed twenty-first century, not charming but pathological. Surely you should be optimizing something?</p>
+
+      <div class="pullquote">The most important things I've encountered in my life came to me while I was looking for something else entirely.</div>
+
+      <p>But I've noticed a quiet counter-movement. Friends who leave their phones at home on Sunday. Colleagues who take lunch walks with no podcast playing. A growing recognition that constant optimization creates a particular kind of blindness — you see only what you're looking for, never what's actually there.</p>
+
+      <h2>Walking as Thinking</h2>
+
+      <p>The philosophers knew this. Kierkegaard, Nietzsche, Rousseau — all were obsessive walkers. Not for exercise, but for thought. There's something about the rhythm of walking that loosens the mind's grip on its familiar patterns. Solutions arrive. Connections form. The walk does the thinking.</p>
+
+      <p>I don't have a grand conclusion. That would defeat the point. But I'll say this: the next time you find yourself with an empty hour, try leaving without a destination. See what you notice. See what finds you.</p>
+    `,
+    tags: ["Philosophy", "Walking", "Urban Life", "Slowness"]
+  },
+  {
+    id: 5,
+    title: "Rewilding the Margins: Notes from an Urban Garden",
+    subtitle: "Between the cracks of the pavement, a guerrilla ecosystem thrives. What the weeds can teach us about resilience.",
+    category: "Ecology",
+    author: "Maren Ishida",
+    avatar: "MI",
+    date: "January 20, 2026",
+    readTime: "8 min read",
+    gradient: "linear-gradient(135deg, #3d5a3e 0%, #7a9f5b 50%, #c8d8a0 100%)",
+    body: `
+      <p>The most resilient garden I know grows in a place no one planted. It's a strip of land between a railway embankment and a warehouse wall in east Kyoto — about three metres wide and sixty metres long. Nobody tends it. Nobody waters it. And yet it contains over forty species of plants, a dozen species of insects, and at least three types of fungi that I've been able to identify.</p>
+
+      <h2>The Intelligence of Weeds</h2>
+
+      <p>We call them weeds, these plants that grow without permission. The word itself is a value judgment — a weed is simply a plant whose purpose we haven't understood yet. But the plants in my railway margin have purposes that are, from an ecological perspective, far more sophisticated than anything in a designed garden.</p>
+
+      <blockquote>A weed is a plant whose virtues have not yet been discovered. What we call disorder is often an intelligence we haven't learned to read.</blockquote>
+
+      <p>They've solved problems that landscape architects spend millions trying to address. They manage water runoff through root systems that no drainage engineer could improve upon. They build soil from concrete dust. They create micro-habitats for pollinators that the "official" green spaces in the neighbourhood have failed to attract.</p>
+
+      <div class="pullquote">The most resilient systems are not the ones we design — they're the ones we allow to design themselves.</div>
+
+      <p>I started documenting this garden three years ago, initially as a botanical curiosity. But the more I studied it, the more I began to see it as a model for something broader — a demonstration of what happens when systems are left to self-organize rather than being centrally planned.</p>
+
+      <h2>Lessons for Design</h2>
+
+      <p>There's a principle in ecology called "edge effect" — the observation that the most biodiversity occurs at the margins between two ecosystems. The edge of a forest and a meadow. The shore between land and sea. The strip between a railway and a wall.</p>
+
+      <p>I think about this in the context of designed systems: software, cities, organizations. The most interesting things happen at the margins. The most resilient solutions emerge from the edges. And the hardest thing for any designer to do is to leave space for the unplanned.</p>
+    `,
+    tags: ["Ecology", "Urban", "Design", "Systems"]
+  },
+  {
+    id: 6,
+    title: "The Frequency of Silence: John Cage at 114",
+    subtitle: "How one composer's most controversial piece became the most important artistic statement of our century.",
+    category: "Music",
+    author: "James Okafor",
+    avatar: "JO",
+    date: "January 16, 2026",
+    readTime: "10 min read",
+    gradient: "linear-gradient(135deg, #1a1a2e 0%, #4a2c6e 50%, #9b59b6 100%)",
+    body: `
+      <p>In 1952, the pianist David Tudor sat at a piano in Woodstock, New York, closed the keyboard lid, and did not play for four minutes and thirty-three seconds. The audience fidgeted, coughed, rustled programmes, and eventually began to listen — really listen — to the sounds around them. This was John Cage's <em>4'33"</em>, and it changed everything.</p>
+
+      <h2>The Sound of Listening</h2>
+
+      <p>The piece is often misunderstood as a joke, a provocation, or a nihilistic gesture. It is none of these things. It is, instead, the most radical reframing of what music can be since someone first hollowed out a bone and blew through it.</p>
+
+      <blockquote>Cage didn't compose silence. He composed listening. The audience's attention became the instrument, and the ambient sounds of the world became the music.</blockquote>
+
+      <p>What Cage understood, decades before the attention economy made it obvious, is that the act of listening is creative. When you attend to sound — really attend, without filtering, without judging — you discover that silence doesn't exist. There is always sound. The question is whether you're hearing it.</p>
+
+      <div class="pullquote">There is no such thing as silence. There is only the sound you haven't learned to hear yet.</div>
+
+      <h2>Cage in the Age of Noise</h2>
+
+      <p>Cage would be 114 this year, and his work feels more urgent than ever. We live in an age of unprecedented noise — not just sonic, but informational. Every app, notification, and algorithm competes for our auditory and cognitive attention. The idea of sitting still for four minutes and thirty-three seconds, with no input, no content, no stimulation, is now genuinely radical.</p>
+
+      <p>I tried it last week. I sat in my studio, set a timer, and listened. Within thirty seconds, I could hear: the hum of my laptop fan, traffic on the street below, a neighbour's television, my own breathing, the creak of the building settling. A full orchestra of the unnoticed.</p>
+
+      <p>Cage's gift was not silence. It was permission — permission to notice what was already there.</p>
+    `,
+    tags: ["Music", "Art", "Attention", "Silence"]
+  },
+  {
+    id: 7,
+    title: "Against Efficiency: The Case for Making Things Slowly",
+    subtitle: "In an age of instant everything, the deliberate practice of slow-making is not nostalgia — it's resistance.",
+    category: "Craft",
+    author: "Luca Ferreira",
+    avatar: "LF",
+    date: "January 12, 2026",
+    readTime: "7 min read",
+    gradient: "linear-gradient(135deg, #8b4513 0%, #d4956a 50%, #f5deb3 100%)",
+    body: `
+      <p>I am currently carving a wooden spoon. It has taken me three weeks. A factory can produce ten thousand spoons in the time it takes me to finish one. My spoon will be slightly asymmetrical, will bear the marks of my knife, and will not be optimized for any purpose except the satisfaction of having made it.</p>
+
+      <p>I am not under the illusion that this is efficient. That is the point.</p>
+
+      <h2>The Speed Trap</h2>
+
+      <p>We live inside an ideology of speed so pervasive that we've forgotten it's an ideology. Faster is better. Instant is ideal. The measure of any process is how much time it eliminates. This logic has given us extraordinary things — medicines, communication, access to knowledge. But it has also created a world in which the experience of making something with your hands, slowly, over time, feels like a radical act.</p>
+
+      <blockquote>Efficiency is a tool, not a value. When we confuse the two, we begin to measure everything that matters by how fast it can be done — which means we stop doing the things that can't be done fast.</blockquote>
+
+      <p>The craft revival — woodworking, ceramics, hand-binding, fermentation — is often dismissed as bourgeois nostalgia. And yes, there's a privilege in choosing to make things slowly when you could buy them instantly. But I think the impulse is more interesting than the critique suggests.</p>
+
+      <div class="pullquote">Speed removes you from the material. Slowness returns you to it. The difference is the difference between knowing and understanding.</div>
+
+      <h2>Making as Thinking</h2>
+
+      <p>When you carve a spoon, you learn things about wood that no amount of reading can teach you. You learn where the grain wants to go. You learn how the moisture content changes the resistance. You learn through your hands, and this knowledge — embodied, specific, earned through repetition — is fundamentally different from abstract knowledge.</p>
+
+      <p>I'm a typographer by profession. I design letterforms on screens, manipulating Bézier curves with a mouse. But once a year, I carve letters in stone. It takes days to produce what I could draw in minutes. And every time, I learn something about letterforms that the screen could never teach me — the way a serif resolves the stress of a chisel strike, the reason a counter needs a specific proportion to catch the light.</p>
+
+      <p>The slow version isn't the inefficient version. It's the version where you actually understand what you're doing.</p>
+    `,
+    tags: ["Craft", "Design", "Philosophy", "Making"]
+  }
+];
+
+const categories = ["All", ...new Set(articles.map(a => a.category))];
+
+// ═══════════════ ROUTING ═══════════════
+let currentPage = 'home';
+
+function navigate(page, skipScroll) {
+  // Update nav
+  document.querySelectorAll('.nav-links a[data-page]').forEach(a => {
+    a.classList.toggle('active', a.dataset.page === page);
+  });
+
+  // Hide all pages
+  document.querySelectorAll('.page').forEach(p => {
+    p.classList.remove('active', 'visible');
+  });
+
+  // Show target page
+  const target = document.getElementById(`page-${page}`);
+  target.classList.add('active');
+
+  // Trigger reflow then animate
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      target.classList.add('visible');
+    });
+  });
+
+  if (!skipScroll) window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  currentPage = page;
+
+  // Build archive if needed
+  if (page === 'archive') buildArchive();
+}
+
+// ═══════════════ ARTICLE ═══════════════
+function openArticle(id) {
+  const article = articles[id];
+  if (!article) return;
+
+  document.getElementById('article-category').textContent = article.category;
+  document.getElementById('article-title').textContent = article.title;
+  document.getElementById('article-subtitle').textContent = article.subtitle;
+  document.getElementById('article-avatar').textContent = article.avatar;
+  document.getElementById('article-author').textContent = article.author;
+  document.getElementById('article-date').textContent = `${article.date} · ${article.readTime}`;
+  document.getElementById('article-hero-gradient').style.background = article.gradient;
+  document.getElementById('article-body').innerHTML = article.body +
+    `<div class="article-tags">${article.tags.map(t => `<span>${t}</span>`).join('')}</div>`;
+
+  // Related posts
+  const related = articles.filter(a => a.id !== id).sort(() => Math.random() - 0.5).slice(0, 2);
+  document.getElementById('related-grid').innerHTML = related.map(r => `
+    <div class="related-card" onclick="openArticle(${r.id})">
+      <div class="related-card-img"><div class="gradient" style="background: ${r.gradient};"></div></div>
+      <div class="related-card-content">
+        <div class="category-tag">${r.category}</div>
+        <h3>${r.title}</h3>
+        <div class="meta">${r.author} · ${r.readTime}</div>
+      </div>
+    </div>
+  `).join('');
+
+  navigate('article');
+}
+
+// ═══════════════ ARCHIVE ═══════════════
+let activeFilter = 'All';
+
+function buildArchive() {
+  // Filters
+  const filterContainer = document.getElementById('archive-filters');
+  filterContainer.innerHTML = categories.map(c =>
+    `<button class="filter-btn${c === activeFilter ? ' active' : ''}" onclick="filterArchive('${c}')">${c}</button>`
+  ).join('');
+
+  // List
+  const filtered = activeFilter === 'All' ? articles : articles.filter(a => a.category === activeFilter);
+  const list = document.getElementById('archive-list');
+  list.innerHTML = filtered.map(a => `
+    <div class="archive-item" onclick="openArticle(${a.id})">
+      <span class="date">${a.date.replace(', 2026', '').replace('January', 'Jan').replace('February', 'Feb')}</span>
+      <h3>${a.title}</h3>
+      <span class="category-label">${a.category}</span>
+    </div>
+  `).join('');
+}
+
+function filterArchive(cat) {
+  activeFilter = cat;
+  buildArchive();
+}
+
+// ═══════════════ SUBSCRIBE MODAL ═══════════════
+function openSubscribeModal() {
+  const modal = document.getElementById('subscribe-modal');
+  modal.classList.add('active');
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      modal.classList.add('visible');
+    });
+  });
+}
+
+function closeSubscribeModal() {
+  const modal = document.getElementById('subscribe-modal');
+  modal.classList.remove('visible');
+  setTimeout(() => modal.classList.remove('active'), 300);
+}
+
+function handleModalSubscribe() {
+  const name = document.getElementById('modal-name').value;
+  const email = document.getElementById('modal-email').value;
+  if (email) {
+    document.querySelector('#subscribe-modal .modal input[type="text"]').style.display = 'none';
+    document.querySelector('#subscribe-modal .modal input[type="email"]').style.display = 'none';
+    document.querySelector('#subscribe-modal .modal .cta').style.display = 'none';
+    document.getElementById('modal-success').style.display = 'block';
+    setTimeout(closeSubscribeModal, 2000);
+  }
+}
+
+function handleNewsletterSubmit(btn) {
+  const input = btn.previousElementSibling;
+  if (input.value) {
+    btn.textContent = 'Subscribed ✓';
+    btn.style.background = '#3d5a3e';
+    input.value = '';
+    input.placeholder = 'You\'re in!';
+    setTimeout(() => {
+      btn.textContent = 'Subscribe';
+      btn.style.background = '';
+      input.placeholder = 'your@email.com';
+    }, 3000);
+  }
+}
+
+// ═══════════════ NAV SCROLL ═══════════════
+let lastScroll = 0;
+window.addEventListener('scroll', () => {
+  const navbar = document.getElementById('navbar');
+  const scrollY = window.scrollY;
+  navbar.classList.toggle('scrolled', scrollY > 50);
+  lastScroll = scrollY;
+});
+
+// ═══════════════ INIT ═══════════════
+document.addEventListener('DOMContentLoaded', () => {
+  navigate('home', true);
+  // Immediate visibility for home page
+  document.getElementById('page-home').classList.add('visible');
+});
+
+// Close modal on overlay click
+document.getElementById('subscribe-modal').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeSubscribeModal();
+});
+
+// Keyboard nav
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeSubscribeModal();
+});
+</script>
+
+</body>
+</html>

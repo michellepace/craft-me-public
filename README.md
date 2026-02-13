@@ -38,3 +38,12 @@ CREATE: "Major Themes", "3 Standout Pieces", "Summary", References "Title | `web
 
 FORMAT: well-structured, emojis, 2 markdown code blocks for questions.
 ```
+
+## Appendix: Quick Prototype
+
+Re-imagining AI Learn Log. Two prorotypes in less than 10 minutes is 10x faster trying to say it in words.
+
+<div align="center">
+  <img src="quick-proto/prototype.jpg" alt="AI Learn Log prototype screenshot" width="750">
+  <p><em>Watch the video: <a href="https://youtu.be/Bk0LmgKghDE">https://youtu.be/Bk0LmgKghDE</a></em></p>
+</div>

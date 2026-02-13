@@ -22,6 +22,7 @@
     ]
   },
   "enabledPlugins": {
-    "skill-creator@my-claude-marketplace": true
+    "skill-creator@my-claude-marketplace": true,
+    "frontend-design@claude-plugins-official": true
   }
 }
